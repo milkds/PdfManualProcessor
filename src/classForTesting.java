@@ -2,8 +2,6 @@
  * This class is for testing, during project. To be deleted afterwards.
  */
 
-
-
 import org.jsoup.*;
 import org.jsoup.nodes.Document;
 
