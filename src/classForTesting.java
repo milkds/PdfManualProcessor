@@ -2,26 +2,36 @@
  * This class is for testing, during project. To be deleted afterwards.
  */
 
+import PdfManualProcessor.Services.LoginHandler;
 import org.jsoup.*;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 
 import java.io.IOException;
+import java.util.Objects;
 
 public class classForTesting {
     static final String URL = "http://74.117.180.69:83/work/pdfapprove/index.php";
 
     public static void main(String[] args)
     {
-     //   login();
-      Document doc = new classForTesting().getHtmlDocument();
+      Document doc = getHtmlDocument(5,"login","password");
+        for (Element element : doc.getElementsByAttribute("name")){
+            if(Objects.equals(element.attr("name"), "url")) {
+                // System.out.println(element.attr("value"));
+                System.out.println(element.attr("id"));
+            }
+
+        }
+
     }
 
 
 
-    protected Document getHtmlDocument() {
+    protected static Document getHtmlDocument(int pageNo,String login, String password) {
         Document doc = null;
         try{
-          doc = Jsoup.connect(URL).get();
+          doc = Jsoup.parse(LoginHandler.getHtmlPage(pageNo,login,password));
         } catch (IOException e) {e.printStackTrace();}
         return doc;
     }
