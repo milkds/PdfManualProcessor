@@ -6,7 +6,7 @@ package PdfManualProcessor.Services;
 public class LoginHandler {
     private static final String HOST = "74.117.180.69";
     private static final String PORT = "83";
-    private static final String LOGIN_REQUEST_FORMAT ="POST http://74.117.180.69:83/work/pdfapprove/index.php?action=login HTTP/1.0\n" +
+    private static final String LOGIN_REQUEST_FORMAT ="POST http://"+HOST+":"+PORT+"/work/pdfapprove/index.php?action=login HTTP/1.0\n" +
             "Host: "+HOST+":"+PORT+"\n" +
             "Content-Length: %d\n" +
             "Content-Type: application/x-www-form-urlencoded\n" +
