@@ -1,3 +1,5 @@
+package PdfManualProcessor;
+
 public class Manual {
 
     private String consoleUrl;

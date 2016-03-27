@@ -1,4 +1,4 @@
-package PdfManualProcessor.Services;
+package PdfManualProcessor.service;
 
 /**
  * This class gets HTML page and Parses it on up to 10 Manuals

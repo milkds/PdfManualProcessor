@@ -1,4 +1,4 @@
-package PdfManualProcessor.Services;
+package PdfManualProcessor.service;
 
 /**
  * This class serializes and deserializes manuals.
