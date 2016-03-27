@@ -2,15 +2,13 @@ package PdfManualProcessor;
 
 public class Manual {
 
-    private String consoleUrl;
     private String pdfUrl;
     private String id;
 
 
-    public Manual(String consoleUrl, String pdfUrl) {
-        this.consoleUrl = consoleUrl;
+    public Manual(String id, String pdfUrl) {
         this.pdfUrl = pdfUrl;
-        this.id=consoleUrl;
+        this.id=id;
     }
 
     public String getPdfUrl() {
