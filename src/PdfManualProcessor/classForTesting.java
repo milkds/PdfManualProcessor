@@ -8,6 +8,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Objects;
 
 public class ClassForTesting {
@@ -21,9 +22,7 @@ public class ClassForTesting {
                 // System.out.println(element.attr("value"));
                 System.out.println(element.attr("id"));
             }
-
         }
-
     }
 
     protected static Document getHtmlDocument(int pageNo,String login, String password) {

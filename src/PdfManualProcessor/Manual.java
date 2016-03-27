@@ -10,6 +10,15 @@ public class Manual {
     public Manual(String consoleUrl, String pdfUrl) {
         this.consoleUrl = consoleUrl;
         this.pdfUrl = pdfUrl;
+        this.id=consoleUrl;
+    }
+
+    public String getPdfUrl() {
+        return pdfUrl;
+    }
+
+    public String getId() {
+        return id;
     }
 
     // TODO:  initialize id
