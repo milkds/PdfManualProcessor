@@ -21,5 +21,10 @@ public class Manual {
         return id;
     }
 
-    // TODO:  initialize id
+    public String getBody(){
+
+        return "";
+    }
+
+    // TODO:  realize getBody() method.
 }
