@@ -11,6 +11,9 @@ public abstract class ManualFilter {
 
     public static void filterNotOpenManuals (List<Manual> downloadedManuals){} //to be decided
     public static boolean manualContainsWordFromDictionary(String checkString, List<String> dictionary){
+        for (String word : dictionary){
+            if (checkString.contains(word))return true;
+        }
         return false;
     }
 

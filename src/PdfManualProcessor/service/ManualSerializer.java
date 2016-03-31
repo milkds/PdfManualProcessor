@@ -2,10 +2,9 @@ package PdfManualProcessor.service;
 
 import PdfManualProcessor.Manual;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.StringWriter;
+import java.io.*;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -37,9 +36,20 @@ public class ManualSerializer {
            e.printStackTrace();
         }
     }
-    public static List<Manual> readManualsFromFile (Path filePath){
-        return null;
+    private static List<Manual> getManualsFromFile (Path filePath){
+        List<Manual> result = new ArrayList<>();
+        try(BufferedReader fileReader = new BufferedReader(new FileReader(filePath.toAbsolutePath().toFile())) ){
+            while (fileReader.ready()){
+                String line = fileReader.readLine();
+                String[]split = line.split("\t");
+                result.add(new Manual(split[0],split[1]));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return result;
     }
+
 
     public static void saveRawManualsToFile(List<Manual> manuals) {
         saveManualsToFile(manuals,RAW_DATA_FILE);
@@ -51,9 +61,14 @@ public class ManualSerializer {
         saveManualsToFile(manuals,CHECK_DELETE_MANUALS);
     }
 
+    public static List<Manual> getManualsForFiltration(){
+        List<Manual>result =getManualsFromFile(RAW_DATA_FILE);
+        result.removeAll(getManualsFromFile(NOT_OPEN));
+        result.removeAll(getManualsFromFile(SURE_DELETE_MANUALS));
+        result.removeAll(getManualsFromFile(CHECK_DELETE_MANUALS));
 
-
-
+        return result;
+    }
     /**
      * to be deleted after class is complete.
      */
@@ -66,5 +81,5 @@ public class ManualSerializer {
     }
 
 
-    // TODO:  decide and implement methods
+    // TODO:  implement exception processing. Write JavaDocs.
 }

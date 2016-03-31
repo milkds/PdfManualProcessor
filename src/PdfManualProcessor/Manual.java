@@ -2,15 +2,12 @@ package PdfManualProcessor;
 
 public class Manual {
 
-    private String consoleUrl;
     private String pdfUrl;
     private String id;
 
-
-    public Manual(String consoleUrl, String pdfUrl) {
-        this.consoleUrl = consoleUrl;
+    public Manual(String id, String pdfUrl) {
+        this.id=id;
         this.pdfUrl = pdfUrl;
-        this.id=consoleUrl;
     }
 
     public String getPdfUrl() {
@@ -26,5 +23,12 @@ public class Manual {
         return "";
     }
 
+    @Override
+    public String toString() {
+        return "Manual{" +
+                "pdfUrl='" + pdfUrl + '\'' +
+                ", id='" + id + '\'' +
+                '}';
+    }
     // TODO:  realize getBody() method.
 }
