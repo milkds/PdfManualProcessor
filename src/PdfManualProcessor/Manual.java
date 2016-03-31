@@ -19,16 +19,8 @@ public class Manual {
     }
 
     public String getBody(){
-
         return "";
     }
 
-    @Override
-    public String toString() {
-        return "Manual{" +
-                "pdfUrl='" + pdfUrl + '\'' +
-                ", id='" + id + '\'' +
-                '}';
-    }
     // TODO:  realize getBody() method.
 }

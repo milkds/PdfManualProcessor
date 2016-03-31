@@ -1,4 +1,4 @@
-package PdfManualProcessor.filters;
+package PdfManualProcessor.service;
 
 import PdfManualProcessor.Manual;
 import PdfManualProcessor.service.DictionaryHandler;
