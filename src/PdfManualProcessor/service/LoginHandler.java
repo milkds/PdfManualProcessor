@@ -20,7 +20,7 @@ import java.util.List;
  * Class for Login and Obtaining raw files data.
  */
 public class LoginHandler {
-
+    private static final String HTML_PAGE_URL = "http://74.117.180.69:83/work/pdfapprove/index.php?page=";
 
     public static CookieStore getCookies(String login, String password) throws IOException {
         CloseableHttpClient httpclient = HttpClients.createDefault();
@@ -42,7 +42,7 @@ public class LoginHandler {
         CloseableHttpClient httpclient = HttpClients.createDefault();
         HttpClientContext context = HttpClientContext.create();
         context.setCookieStore(cookieStore);
-        String url = "http://74.117.180.69:83/work/pdfapprove/index.php?page="+pageNo;
+        String url = HTML_PAGE_URL+pageNo;
         HttpGet httpGet = new HttpGet(url);
         HttpResponse httpResponse2 = httpclient.execute(httpGet,context);
         BufferedReader rd = new BufferedReader(new InputStreamReader(httpResponse2.getEntity().getContent()));

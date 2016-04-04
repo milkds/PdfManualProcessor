@@ -24,7 +24,7 @@ public class ClassForTesting {
     protected static Document getHtmlDocument(int pageNo,String login, String password) {
         Document doc = null;
         try{
-          doc = Jsoup.parse(LoginHandler.getHtmlPage(pageNo,login,password));
+          doc = Jsoup.parse(LoginHandler.getHtmlPage(LoginHandler.getCookies(login,password),pageNo));
         } catch (IOException e) {e.printStackTrace();}
         return doc;
     }
