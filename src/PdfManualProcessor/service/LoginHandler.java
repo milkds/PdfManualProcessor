@@ -59,5 +59,5 @@ public class LoginHandler {
         return result.toString();
     }
 
-
+ //// TODO: 04.04.2016 add JavaDocs. Implement Exception handling.
 }
