@@ -20,20 +20,19 @@ import java.util.List;
  * Class for Login and Obtaining raw files data.
  */
 public class LoginHandler {
-    private static final String HTML_PAGE_URL = "http://74.117.180.69:83/work/pdfapprove/index.php?page=";
+    private static final String MANUALS_PAGE_URL = "http://74.117.180.69:83/work/pdfapprove/index.php?page=";
+    private static final String LOGIN_PAGE_URL = "http://74.117.180.69:83/work/pdfapprove/index.php?action=login";
 
     public static CookieStore getCookies(String login, String password) throws IOException {
         CloseableHttpClient httpclient = HttpClients.createDefault();
         HttpClientContext context = HttpClientContext.create();
-        HttpPost httpPost = new HttpPost("http://74.117.180.69:83/work/pdfapprove/index.php?action=login");
+        HttpPost httpPost = new HttpPost(LOGIN_PAGE_URL);
         List<NameValuePair> urlParameters = new ArrayList<>();
         urlParameters.add(new BasicNameValuePair("auth", "1"));
         urlParameters.add(new BasicNameValuePair("login", login));
         urlParameters.add(new BasicNameValuePair("password", password));
-
         httpPost.setEntity(new UrlEncodedFormEntity(urlParameters));
-
-        HttpResponse httpResponse = httpclient.execute(httpPost,context);
+        httpclient.execute(httpPost,context);
         CookieStore cookieStore = context.getCookieStore();
         httpclient.close();
         return cookieStore;
@@ -42,7 +41,7 @@ public class LoginHandler {
         CloseableHttpClient httpclient = HttpClients.createDefault();
         HttpClientContext context = HttpClientContext.create();
         context.setCookieStore(cookieStore);
-        String url = HTML_PAGE_URL+pageNo;
+        String url = MANUALS_PAGE_URL+pageNo;
         HttpGet httpGet = new HttpGet(url);
         HttpResponse httpResponse2 = httpclient.execute(httpGet,context);
         BufferedReader rd = new BufferedReader(new InputStreamReader(httpResponse2.getEntity().getContent()));
