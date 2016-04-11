@@ -1,121 +1,62 @@
 package PdfManualProcessor.service;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.CookieStore;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.protocol.HttpClientContext;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.message.BasicNameValuePair;
+
 import java.io.*;
-import java.net.Socket;
-import java.net.SocketException;
+import java.util.ArrayList;
+import java.util.List;
+
 
 /**
- * Login class. Should also contain some constants connected with login request compilation.
- *
- * While implementing GUI - will make get login and get password methods and refactor getHtmlPage() method accordingly.
+ * Class for Login and Obtaining raw files data.
  */
 public class LoginHandler {
-    private static final String HOST = "74.117.180.69";
-    private static final int PORT = 83;
-    private static final String LOGIN_REQUEST_FORMAT ="POST http://"+HOST+":"+PORT+"/work/pdfapprove/index.php?action=login HTTP/1.1\n" +
-            "Host: "+HOST+":"+PORT+"\n" +
-            "Content-Length: %d\n" +
-            "Content-Type: application/x-www-form-urlencoded\n" +
-            "Connection: close\n\n" +
-            "auth=1&login=%s&password=%s";
-    private static final String GET_HTML_PAGE_REQUEST_FORMAT = "GET http://"+HOST+":"+PORT+"/work/pdfapprove/index.php?page=%d HTTP/1.1\n" +
-            "Host: "+HOST+":"+PORT+"\n" +
-            "Cookie:login=%s; password=%s; %s\n\n";
+    private static final String MANUALS_PAGE_URL = "http://74.117.180.69:83/work/pdfapprove/index.php?page=";
+    private static final String LOGIN_PAGE_URL = "http://74.117.180.69:83/work/pdfapprove/index.php?action=login";
 
-    /**
-     * @param pageNo - number of page we want to get.
-     * @param login - login got from user.
-     * @param password - password got from user.
-     * @return Html page with 10 manual links for parsing.
-     * @throws IOException
-     */
-    public static String getHtmlPage(int pageNo,String login, String password) throws IOException {
-        String request = String.format(GET_HTML_PAGE_REQUEST_FORMAT,pageNo,login,password,getCookie(login,password));
-        Socket socket = getSocket();
-        sendRequest(socket,request);
-        return getServerAnswer(socket);
+    public static CookieStore getCookies(String login, String password) throws IOException {
+        CloseableHttpClient httpclient = HttpClients.createDefault();
+        HttpClientContext context = HttpClientContext.create();
+        HttpPost httpPost = new HttpPost(LOGIN_PAGE_URL);
+        List<NameValuePair> urlParameters = new ArrayList<>();
+        urlParameters.add(new BasicNameValuePair("auth", "1"));
+        urlParameters.add(new BasicNameValuePair("login", login));
+        urlParameters.add(new BasicNameValuePair("password", password));
+        httpPost.setEntity(new UrlEncodedFormEntity(urlParameters));
+        httpclient.execute(httpPost,context);
+        CookieStore cookieStore = context.getCookieStore();
+        httpclient.close();
+        return cookieStore;
     }
+    public static String getHtmlPage(CookieStore cookieStore,int pageNo) throws IOException {
+        CloseableHttpClient httpclient = HttpClients.createDefault();
+        HttpClientContext context = HttpClientContext.create();
+        context.setCookieStore(cookieStore);
+        String url = MANUALS_PAGE_URL+pageNo;
+        HttpGet httpGet = new HttpGet(url);
+        HttpResponse httpResponse2 = httpclient.execute(httpGet,context);
+        BufferedReader rd = new BufferedReader(new InputStreamReader(httpResponse2.getEntity().getContent()));
 
-    /**
-     * @param login - login got from user.
-     * @param password - password got from user.
-     * @return valid cookie for getting Html page with 10 manual links for parsing.
-     * @throws SocketException
-     */
-    public static String getCookie(String login, String password) throws SocketException {
-        Socket socket = getSocket();
-        String answer;
-        String cookie ="";
-        try {
-            sendRequest(socket,getLoginRequest(login,password));
-            answer=getServerAnswer(socket);
-            cookie=answer.substring(answer.indexOf("SESSID"),answer.indexOf(';'));
-        } catch (IOException e) {
-            e.printStackTrace();
+        StringBuilder result = new StringBuilder();
+        String line;
+        while ((line = rd.readLine()) != null) {
+            result.append(line);
+            result.append("\n");
         }
-        return cookie;
+        rd.close();
+
+        httpclient.close();
+        return result.toString();
     }
 
-    /**
-     * @param login - login got from user.
-     * @param password - password got from user.
-     * @return HTML POST request for getting valid cookie.
-     */
-    public static String getLoginRequest(String login, String password){
-        int contentLength = 23+login.length()+password.length(); //23 is the constant length of auth line.
-        return String.format(LOGIN_REQUEST_FORMAT,contentLength,login,password);
-    }
-
-    /**
-     * @return Socket
-     * @throws SocketException
-     */
-    public static Socket getSocket() throws SocketException {
-        int count = 0;
-        while (true) {
-            try {
-                return new Socket(HOST, PORT);
-            } catch (IOException e) {
-                count++;
-                if (count == 3) throw new SocketException();
-            }
-        }
-    }
-
-    /**
-     * Sends request to server.
-     *
-     * @param socket from getSocket() method.
-     * @param request - have different options. Can be login request or get Html page with 10 manual links for parsing request.
-     * @throws IOException
-     */
-    public static void sendRequest(Socket socket, String request) throws IOException {
-        OutputStream outputStream = socket.getOutputStream();
-        outputStream.write(request.getBytes());
-    }
-
-    /**
-     * @param socket - from getSocket() method.
-     * @return Server answer on our requests.
-     * @throws IOException
-     */
-    public static String getServerAnswer(Socket socket) throws IOException {
-        StringBuilder sb = new StringBuilder();
-        BufferedReader bfr = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        int ch = bfr.read();
-        while (ch != -1) {
-            sb.append((char) ch);
-            ch = bfr.read();
-        }
-        socket.close();
-        return sb.toString();
-    }
-
-    /**
-     * Main method to be deleted after class is ready.
-     */
-    public static void main(String[] args) throws IOException {
-        System.out.println(getHtmlPage(15,"xxx","xxx"));
-    }
-    // TODO: check for possible Exceptions, remake JavaDoc, remake getting Html page for use with password hash in request instead of bare password.
+ //// TODO: 04.04.2016 add JavaDocs. Implement Exception handling.
 }

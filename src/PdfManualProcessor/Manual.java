@@ -5,10 +5,9 @@ public class Manual {
     private String pdfUrl;
     private String id;
 
-
     public Manual(String id, String pdfUrl) {
-        this.pdfUrl = pdfUrl;
         this.id=id;
+        this.pdfUrl = pdfUrl;
     }
 
     public String getPdfUrl() {
@@ -19,5 +18,9 @@ public class Manual {
         return id;
     }
 
-    // TODO:  initialize id
+    public String getBody(){
+        return "";
+    }
+
+    // TODO:  realize getBody() method.
 }
