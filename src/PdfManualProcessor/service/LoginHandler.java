@@ -43,8 +43,8 @@ public class LoginHandler {
         context.setCookieStore(cookieStore);
         String url = MANUALS_PAGE_URL+pageNo;
         HttpGet httpGet = new HttpGet(url);
-        HttpResponse httpResponse2 = httpclient.execute(httpGet,context);
-        BufferedReader rd = new BufferedReader(new InputStreamReader(httpResponse2.getEntity().getContent()));
+        HttpResponse httpResponse = httpclient.execute(httpGet,context);
+        BufferedReader rd = new BufferedReader(new InputStreamReader(httpResponse.getEntity().getContent()));
 
         StringBuilder result = new StringBuilder();
         String line;
