@@ -37,11 +37,10 @@ public abstract class ManualFilter {
             else checkString=manual.getPdfUrl();
             if (manualContainsWordFromDictionary(checkString,sureDeleteDictionary)) {
                 sureDeleteManuals.add(manual);
-                break;
+                continue;
             }
             if (manualContainsWordFromDictionary(checkString,checkDeleteDictionary)) {
                 checkDeleteManuals.add(manual);
-                break;
             }
         }
 
