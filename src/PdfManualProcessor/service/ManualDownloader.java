@@ -21,7 +21,7 @@ import java.util.regex.Pattern;
  *
  * we have 3 types of urls - ftp, http and https
  *
- * http and https we do the same - parse host from urlString. Send head request to it - get Content-Length field.
+ * http and https we do the same - parse host from urlString. Send head request to it - get Content-Length field. //this is not actual - use httpClient
  *
  * For ftp we use algorithm from sampleFTPMethod
  *
