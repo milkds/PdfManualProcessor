@@ -48,5 +48,5 @@ public abstract class ManualFilter {
         ManualSerializer.saveCheckDeleteManualsToFile(checkDeleteManuals);
     }
 
-    //// TODO: 30.03.2016 write JavaDocs. Decide how to implement filtering not Open manuals.
+    //// TODO: 30.03.2016 write JavaDocs. Decide how to implement filtering not Open manuals. add check with premises
 }
