@@ -56,6 +56,10 @@ public class ManualDownloader {
         пароль: user@domain.net*/
     }
 
+    /***
+     * Next two methods are not actual. Doing same by HttpClient from Apache.
+     * @throws IOException
+     */
     public static void headHttpRequestSampleMethod() throws IOException {
         StringBuilder sb = new StringBuilder();
         sb.append("HEAD http://www.sylvane.com/media/documents/products/soleus-ky5-110-ac-manual.pdf HTTP/1.0\n");
