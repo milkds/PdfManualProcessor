@@ -24,5 +24,6 @@ public class Manual {
         return ManualReader.readStartingPages(this,numberOfPages);
     }
 
+
     // TODO:  realize getBody() method.
 }
