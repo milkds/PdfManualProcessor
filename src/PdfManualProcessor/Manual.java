@@ -1,5 +1,7 @@
 package PdfManualProcessor;
 
+import PdfManualProcessor.service.ManualReader;
+
 public class Manual {
 
     private String pdfUrl;
@@ -18,8 +20,8 @@ public class Manual {
         return id;
     }
 
-    public String getBody(){
-        return "";
+    public String getBody(int numberOfPages){
+        return ManualReader.readStartingPages(this,numberOfPages);
     }
 
     // TODO:  realize getBody() method.

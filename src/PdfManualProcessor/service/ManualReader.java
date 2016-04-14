@@ -6,34 +6,39 @@ import com.itextpdf.text.pdf.parser.PdfTextExtractor;
 import com.itextpdf.text.pdf.parser.SimpleTextExtractionStrategy;
 import com.itextpdf.text.pdf.parser.TextExtractionStrategy;
 
+import java.io.IOException;
 import java.io.StringWriter;
 
 public class ManualReader {
     private final static String PDF_STORAGE_DIR = "D:\\pdf.Storage\\";
+    final static int NUMBER_OF_PAGES_TO_READ = 5;
 
     /**
      * Method from old project. To be updated.
-     * FileStorageAdress Should be stated in Properties. Temporary we will use String variable.
+     * FileStorageAddress Should be stated in Properties. Temporary we will use String variable.
      */
-    public static String readPdf(Manual manual){
+    public static String readStartingPages(Manual manual, int pagesQuantity) {
         String text;
         StringWriter fileBody = new StringWriter();
         try {
-            PdfReader pdfReader = new PdfReader(PDF_STORAGE_DIR+manual.getId()+".pdf");
-
-
-            for (int i = 1; i <= pdfReader.getNumberOfPages()&&i<=2; ++i) {
+            PdfReader pdfReader = new PdfReader(PDF_STORAGE_DIR + manual.getId() + ".pdf");
+            int totalNumberOfPages = pdfReader.getNumberOfPages();
+            if (pagesQuantity > totalNumberOfPages) pagesQuantity = totalNumberOfPages;
+            for (int i = 1; i < pdfReader.getNumberOfPages() && i < pagesQuantity; i++) {
                 TextExtractionStrategy strategy = new SimpleTextExtractionStrategy();
                 text = PdfTextExtractor.getTextFromPage(pdfReader, i, strategy);
                 fileBody.write(text);
-
             }
             pdfReader.close();
-            //   System.out.println("file - "+fileName + " was read successfully.");
-        } catch (Exception | Error e) {
-            System.out.println("error");
+        }
+        //to be reworked
+        catch (Exception | Error e) {
+            System.out.println("PDF file is not readable");
         }
 
         return fileBody.toString();
     }
+
+    //todo: rework catch section from readStartingPages
+
 }

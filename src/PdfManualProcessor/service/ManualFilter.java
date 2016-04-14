@@ -32,7 +32,7 @@ public abstract class ManualFilter {
         for (Manual manual : manuals){
             String checkString;
             if (checkByBody) {
-                 checkString = manual.getBody();
+                 checkString = manual.getBody(ManualReader.NUMBER_OF_PAGES_TO_READ);
             }
             else checkString=manual.getPdfUrl();
             if (manualContainsWordFromDictionary(checkString,sureDeleteDictionary)) {
