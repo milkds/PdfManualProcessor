@@ -38,7 +38,11 @@ public class ManualSizeChecker {
         }
         return result;
     }
-    public static int getSizeByHttp(HttpResponse response){
+    public static int getSizeByHttp(String urlString){
+        return getSizeByHttp(getHttpResponse(urlString));
+    }
+
+    private static int getSizeByHttp(HttpResponse response){
         int result =0;
         Header header = response.getFirstHeader("Content-Length");
         if(header!=null){
