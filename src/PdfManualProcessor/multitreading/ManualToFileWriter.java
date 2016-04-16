@@ -5,6 +5,7 @@ import PdfManualProcessor.service.ManualSerializer;
 
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 public class ManualToFileWriter implements Runnable {
     private final BlockingQueue<List<Manual>> manualWritingQueue;
@@ -16,9 +17,21 @@ public class ManualToFileWriter implements Runnable {
     @Override
     public void run() {
         while (true){
-            List<Manual> manuals = manualWritingQueue.poll();
-            if (manuals.size()==ManualProducingController.TOXIC_SIZE)Thread.currentThread().interrupt();
-            ManualSerializer.saveRawManualsToFile(manuals);
+            List<Manual> manuals = null;
+            try{
+                manuals = manualWritingQueue.take();
+                System.out.println(manuals.size());
+                if (manuals.equals(ManualProducingController.TOXIC_LIST)){
+                    System.out.println("got toxic list");
+                    Thread.currentThread().interrupt();
+                }
+                ManualSerializer.saveRawManualsToFile(manuals);
+                System.out.println("manuals saved");
+             }
+           catch (InterruptedException e){
+               break;
+           }
+
         }
     }
 }

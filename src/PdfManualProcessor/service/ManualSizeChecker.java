@@ -76,7 +76,7 @@ public class ManualSizeChecker {
                 }
             });
         }
-        catch (IOException e) {
+        catch (Exception e) {
            response = getHttpResponseByProxy(checkedUrl);
         }
         return response;

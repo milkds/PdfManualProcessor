@@ -26,6 +26,8 @@ public class ManualSerializer {
             stringWriter.write(manual.getId());
             stringWriter.write("\t");
             stringWriter.write(manual.getPdfUrl());
+            stringWriter.write("\t");
+            stringWriter.write(manual.getSize()+"");
             stringWriter.write(System.lineSeparator());
         }
 
@@ -42,7 +44,7 @@ public class ManualSerializer {
             while (fileReader.ready()){
                 String line = fileReader.readLine();
                 String[]split = line.split("\t");
-                result.add(new Manual(split[0],split[1]));
+                result.add(new Manual(split[0],split[1],Integer.parseInt(split[2])));
             }
         } catch (IOException e) {
             e.printStackTrace();

@@ -12,6 +12,7 @@ public class HtmlPageProcessor implements Runnable{
     private final BlockingQueue<String> htmlPageQueue;
     private final BlockingQueue<List<Manual>> manualWritingQueue;
 
+
     public HtmlPageProcessor(BlockingQueue<String> queue, BlockingQueue<List<Manual>> manualWritingQueue) {
         this.htmlPageQueue = queue;
         this.manualWritingQueue = manualWritingQueue;
@@ -22,15 +23,16 @@ public class HtmlPageProcessor implements Runnable{
        while (true){
            try {
                String pageBody = htmlPageQueue.take();
-               if(ManualProducingController.TOXIC_WORD.equals(pageBody)){
-                   manualWritingQueue.put(new ArrayList<Manual>(ManualProducingController.TOXIC_SIZE));
+               if(pageBody.equals(ManualProducingController.TOXIC_WORD)){
+                   manualWritingQueue.put(ManualProducingController.TOXIC_LIST); //to be reworked urgently.
+                   htmlPageQueue.put(ManualProducingController.TOXIC_WORD);
                    Thread.currentThread().interrupt();
                }
                List<Manual> manuals = ManualPageParser.getManuals(pageBody);
                manualWritingQueue.put(manuals);
            }
            catch (InterruptedException ignored) {
-               System.out.println(Thread.currentThread().getName()+" thread finished.");
+               break;
            }
        }
     }

@@ -14,6 +14,11 @@ public class Manual {
         this.pdfUrl = pdfUrl;
         this.size= ManualSizeChecker.getManualSize(pdfUrl);
     }
+    public Manual(String id, String pdfUrl,int size) {
+        this.id=id;
+        this.pdfUrl = pdfUrl;
+        this.size=size;
+    }
 
     public String getPdfUrl() {
         return pdfUrl;
@@ -25,6 +30,10 @@ public class Manual {
 
     public String getBody(int numberOfPages){
         return ManualReader.readStartingPages(this,numberOfPages);
+    }
+
+    public int getSize() {
+        return size;
     }
 
 

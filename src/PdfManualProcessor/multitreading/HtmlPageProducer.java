@@ -25,6 +25,7 @@ public class HtmlPageProducer implements Runnable{
         String pageBody = LoginHandler.getHtmlPage(cookieStore,pageNo);
         try {
             queue.put(pageBody);
+            System.out.println(pageNo + " is put to queue.");
         }
         catch (InterruptedException ignored) {
         }
