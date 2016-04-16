@@ -5,5 +5,7 @@ package PdfManualProcessor.service;
  */
 public class ManualPageParser {
 
+
+
     // TODO:  decide and implement methods
 }
