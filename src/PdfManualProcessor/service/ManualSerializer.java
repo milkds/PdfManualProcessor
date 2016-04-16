@@ -29,7 +29,7 @@ public class ManualSerializer {
             stringWriter.write(System.lineSeparator());
         }
 
-        try (FileWriter fileWriter = new FileWriter(filePath.toAbsolutePath().toFile())) {
+        try (FileWriter fileWriter = new FileWriter(filePath.toAbsolutePath().toFile(),true)) {
             fileWriter.write(stringWriter.toString());
             stringWriter.close();
         } catch (IOException e) {
@@ -81,5 +81,5 @@ public class ManualSerializer {
     }
 
 
-    // TODO:  implement exception processing. Write JavaDocs.
+    // TODO:  implement exception processing. Write JavaDocs. CheckFileWriting for case with interrupted writing.
 }
