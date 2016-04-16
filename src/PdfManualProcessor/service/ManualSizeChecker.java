@@ -69,12 +69,18 @@ public class ManualSizeChecker {
         catch (IOException e) {
            response = getHttpResponseByProxy(checkedUrl);
         }
-        
         return response;
     }
     private static HttpResponse getHttpResponseByProxy(String urlString){
-
-        return null;
+        CloseableHttpClient httpclient = HttpClients.createDefault();
+        HttpHead httpHead = new HttpHead(urlString);
+        HttpResponse response=null;
+        try {
+             response = httpclient.execute(httpHead);
+        }
+        catch (IOException ignored) {
+        }
+        return response;
     }
     private static URL getUrlForFtp(String urlString) throws MalformedURLException {
         urlString = urlString.replaceAll("%20"," ");
@@ -93,5 +99,5 @@ public class ManualSizeChecker {
     }
 
 
-    // TODO: 15.04.2016 implement getHttpResponseByProxy() method. Check ResponseHandler for notOpen Manuals(404 answer). Decide where to check is Manual size legit or not.
+    // TODO: 15.04.2016. Check ResponseHandler for notOpen Manuals(404 answer). Decide where to check is Manual size legit or not.
 }
