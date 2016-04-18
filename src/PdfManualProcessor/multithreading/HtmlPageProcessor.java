@@ -11,11 +11,13 @@ public class HtmlPageProcessor implements Callable{
 
     private final BlockingQueue<String> htmlPageQueue;
     private final BlockingQueue<List<Manual>> manualWritingQueue;
+    private BlockingQueue<Manual> downloadingQueue;
 
 
-    public HtmlPageProcessor(BlockingQueue<String> queue, BlockingQueue<List<Manual>> manualWritingQueue) {
+    public HtmlPageProcessor(BlockingQueue<String> queue, BlockingQueue<List<Manual>> manualWritingQueue, BlockingQueue<Manual> downloadingQueue) {
         this.htmlPageQueue = queue;
         this.manualWritingQueue = manualWritingQueue;
+        this.downloadingQueue = downloadingQueue;
     }
 
     /*@Override
@@ -42,13 +44,16 @@ public class HtmlPageProcessor implements Callable{
         System.out.println("processor started");
         while (true){
                 String pageBody = htmlPageQueue.take();
-            System.out.println("page taken");
+                System.out.println("page taken");
                 if(pageBody.equals(ManualProducingController.TOXIC_WORD)){
                     htmlPageQueue.put(ManualProducingController.TOXIC_WORD);
                     break;
                 }
                 List<Manual> manuals = ManualPageParser.getManuals(pageBody);
                 manualWritingQueue.put(manuals);
+                for (Manual m : manuals){
+                    downloadingQueue.put(m);
+                }
         }
         return "";
     }

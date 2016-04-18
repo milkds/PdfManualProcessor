@@ -2,6 +2,9 @@ package PdfManualProcessor.multithreading;
 
 import PdfManualProcessor.Manual;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
 
@@ -27,18 +30,29 @@ import java.util.concurrent.Callable;
  */
 public class ManualDownloader implements Callable<String> {
     private BlockingQueue<Manual> downloadingQueue;
+    private final BlockingQueue<List<Manual>> manualWritingQueue;
 
-    public ManualDownloader(BlockingQueue<Manual> downloadingQueue) {
+    public ManualDownloader(BlockingQueue<Manual> downloadingQueue, BlockingQueue<List<Manual>> manualWritingQueue) {
         this.downloadingQueue = downloadingQueue;
+        this.manualWritingQueue = manualWritingQueue;
     }
     //
 
-    public static void donwloadManual(Manual m){
+    public static void downloadManual(Manual m){
         System.out.println("Manual downloaded: "+m.getPdfUrl());
     }
 
     @Override
     public String call() throws Exception {
+        while (true){
+            Manual m = downloadingQueue.take();
+            if (m.equals(ManualProducingController.TOXIC_MANUAL)){
+                downloadingQueue.put(m);
+                break;
+            }
+            downloadManual(m);
+            manualWritingQueue.put(Collections.singletonList(m));
+        }
         return "";
     }
 }

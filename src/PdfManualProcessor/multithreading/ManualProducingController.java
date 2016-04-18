@@ -13,11 +13,12 @@ import java.util.concurrent.*;
 public class ManualProducingController {
     static final String TOXIC_WORD = "toxic";
     static final List<Manual> TOXIC_LIST = new ArrayList<>();
+    static final Manual TOXIC_MANUAL = new Manual("","",0);
 
     public static void main(String[] args) throws InterruptedException {
         try {
             CookieStore cookieStore = LoginHandler.getCookies("login","password");
-            getManuals(50,70,cookieStore);
+            getManuals(80,90,cookieStore);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -32,6 +33,7 @@ public class ManualProducingController {
     public static void getManuals(int startPage, int finishPage, CookieStore cookieStore) throws InterruptedException {
         BlockingQueue<String> htmlPageQueue = new LinkedBlockingQueue();
         BlockingQueue<List<Manual>> manualWritingQueue = new LinkedBlockingQueue();
+        BlockingQueue<List<Manual>> downloadedManualWritingQueue = new LinkedBlockingQueue();
         BlockingQueue<Manual> downloadingQueue = initDownloadingQueue();
         ExecutorService service = Executors.newCachedThreadPool();
         List<Future>producerFutures = new ArrayList<>();
@@ -43,16 +45,17 @@ public class ManualProducingController {
             producerFutures.add(ft);
         }
         for (int i = 0; i <10 ; i++) {
-            Future<String>ft = service.submit(new HtmlPageProcessor(htmlPageQueue,manualWritingQueue) {
+            Future<String>ft = service.submit(new HtmlPageProcessor(htmlPageQueue,manualWritingQueue, downloadingQueue) {
             });
             processorFutures.add(ft);
         }
         for (int i = 0; i <10 ; i++) {
-            Future<String>ft = service.submit(new ManualDownloader(downloadingQueue) {
+            Future<String>ft = service.submit(new ManualDownloader(downloadingQueue, manualWritingQueue) {
             });
             downloadingFutures.add(ft);
         }
-        new Thread(new ManualToFileWriter(manualWritingQueue)).start();
+        new Thread(new ManualToFileWriter(manualWritingQueue, ManualSerializer.getRawDataFile())).start();
+        new Thread(new ManualToFileWriter(downloadedManualWritingQueue, ManualSerializer.getDownloadedManualFile())).start();
      //   new Thread(new ManualToFileWriter(manualWritingQueue)).start();
         while (isRunning(producerFutures)){
             try {
@@ -63,10 +66,16 @@ public class ManualProducingController {
         System.out.println("writer started");
         htmlPageQueue.put(TOXIC_WORD);
         while (isRunning(processorFutures)){
-                System.out.println("processors running");
+
                 TimeUnit.SECONDS.sleep(1);
         }
         manualWritingQueue.put(TOXIC_LIST);
+        downloadingQueue.put(TOXIC_MANUAL);
+        while (isRunning(downloadingFutures)){
+            System.out.println("downloaders running");
+            TimeUnit.SECONDS.sleep(15);
+        }
+        downloadedManualWritingQueue.put(TOXIC_LIST);
         service.shutdown();
     }
 

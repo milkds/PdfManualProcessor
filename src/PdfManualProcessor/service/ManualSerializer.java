@@ -81,6 +81,12 @@ public class ManualSerializer {
 
         return allManuals;
     }
+    public static Path getRawDataFile() {
+        return RAW_DATA_FILE;
+    }
+    public static Path getDownloadedManualFile() {
+        return DOWNLOADED_MANUAL_FILE;
+    }
     /**
      * to be deleted after class is complete.
      */

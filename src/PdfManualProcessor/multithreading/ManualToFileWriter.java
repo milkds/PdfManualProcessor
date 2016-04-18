@@ -3,14 +3,17 @@ package PdfManualProcessor.multithreading;
 import PdfManualProcessor.Manual;
 import PdfManualProcessor.service.ManualSerializer;
 
+import java.nio.file.Path;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 
 public class ManualToFileWriter implements Runnable {
     private final BlockingQueue<List<Manual>> manualWritingQueue;
+    private final Path serializationFilePath;
 
-    public ManualToFileWriter(BlockingQueue<List<Manual>> manualWritingQueue) {
+    public ManualToFileWriter(BlockingQueue<List<Manual>> manualWritingQueue, Path serializationFilePath) {
         this.manualWritingQueue = manualWritingQueue;
+        this.serializationFilePath = serializationFilePath;
     }
 
     @Override
@@ -23,12 +26,11 @@ public class ManualToFileWriter implements Runnable {
                     System.out.println("got toxic list");
                    break;
                 }
-                ManualSerializer.saveRawManualsToFile(manuals);
+                ManualSerializer.saveManualsToFile(manuals,serializationFilePath);
                 System.out.println("manuals saved");
              }
            catch (InterruptedException ignored){
            }
-
         }
     }
 }
