@@ -4,8 +4,9 @@ import PdfManualProcessor.service.LoginHandler;
 import org.apache.http.client.CookieStore;
 
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Callable;
 
-public class HtmlPageProducer implements Runnable{
+public class HtmlPageProducer implements Callable{
     /**
      * This class gets HTML pages with up to 10 manual links on it.
      */
@@ -19,9 +20,8 @@ public class HtmlPageProducer implements Runnable{
         this.cookieStore = cookieStore;
         this.pageNo = pageNo;
     }
-
     @Override
-    public void run() {
+    public Object call() throws Exception {
         String pageBody = LoginHandler.getHtmlPage(cookieStore,pageNo);
         try {
             queue.put(pageBody);
@@ -29,5 +29,6 @@ public class HtmlPageProducer implements Runnable{
         }
         catch (InterruptedException ignored) {
         }
+        return "";
     }
 }

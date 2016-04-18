@@ -6,8 +6,9 @@ import PdfManualProcessor.service.ManualPageParser;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Callable;
 
-public class HtmlPageProcessor implements Runnable{
+public class HtmlPageProcessor implements Callable{
 
     private final BlockingQueue<String> htmlPageQueue;
     private final BlockingQueue<List<Manual>> manualWritingQueue;
@@ -18,7 +19,7 @@ public class HtmlPageProcessor implements Runnable{
         this.manualWritingQueue = manualWritingQueue;
     }
 
-    @Override
+    /*@Override
     public void run() {
        while (true){
            try {
@@ -35,5 +36,21 @@ public class HtmlPageProcessor implements Runnable{
                break;
            }
        }
+    }*/
+
+    @Override
+    public Object call() throws Exception {
+        System.out.println("processor started");
+        while (true){
+                String pageBody = htmlPageQueue.take();
+            System.out.println("page taken");
+                if(pageBody.equals(ManualProducingController.TOXIC_WORD)){
+                    htmlPageQueue.put(ManualProducingController.TOXIC_WORD);
+                    break;
+                }
+                List<Manual> manuals = ManualPageParser.getManuals(pageBody);
+                manualWritingQueue.put(manuals);
+        }
+        return "";
     }
 }

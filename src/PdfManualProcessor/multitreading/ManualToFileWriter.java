@@ -20,16 +20,14 @@ public class ManualToFileWriter implements Runnable {
             List<Manual> manuals = null;
             try{
                 manuals = manualWritingQueue.take();
-                System.out.println(manuals.size());
                 if (manuals.equals(ManualProducingController.TOXIC_LIST)){
                     System.out.println("got toxic list");
-                    Thread.currentThread().interrupt();
+                   break;
                 }
                 ManualSerializer.saveRawManualsToFile(manuals);
                 System.out.println("manuals saved");
              }
-           catch (InterruptedException e){
-               break;
+           catch (InterruptedException ignored){
            }
 
         }
