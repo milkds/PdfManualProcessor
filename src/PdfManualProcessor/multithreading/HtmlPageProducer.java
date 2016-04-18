@@ -1,4 +1,4 @@
-package PdfManualProcessor.multitreading;
+package PdfManualProcessor.multithreading;
 
 import PdfManualProcessor.service.LoginHandler;
 import org.apache.http.client.CookieStore;

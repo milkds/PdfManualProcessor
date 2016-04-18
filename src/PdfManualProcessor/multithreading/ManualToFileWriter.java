@@ -1,11 +1,10 @@
-package PdfManualProcessor.multitreading;
+package PdfManualProcessor.multithreading;
 
 import PdfManualProcessor.Manual;
 import PdfManualProcessor.service.ManualSerializer;
 
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.TimeUnit;
 
 public class ManualToFileWriter implements Runnable {
     private final BlockingQueue<List<Manual>> manualWritingQueue;

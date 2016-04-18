@@ -1,9 +1,9 @@
-package PdfManualProcessor.multitreading;
+package PdfManualProcessor.multithreading;
 
 import PdfManualProcessor.Manual;
 import PdfManualProcessor.service.LoginHandler;
+import PdfManualProcessor.service.ManualSerializer;
 import org.apache.http.client.CookieStore;
-import sun.misc.ThreadGroupUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -14,7 +14,7 @@ public class ManualProducingController {
     static final String TOXIC_WORD = "toxic";
     static final List<Manual> TOXIC_LIST = new ArrayList<>();
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         try {
             CookieStore cookieStore = LoginHandler.getCookies("login","password");
             getManuals(50,70,cookieStore);
@@ -24,23 +24,36 @@ public class ManualProducingController {
 
     }
 
-    public static void getManuals(int startPage, int finishPage, CookieStore cookieStore){
+    /***
+     *
+     * Need to put Manuals to downloadQueue to make second writer write them.
+     */
+
+    public static void getManuals(int startPage, int finishPage, CookieStore cookieStore) throws InterruptedException {
         BlockingQueue<String> htmlPageQueue = new LinkedBlockingQueue();
         BlockingQueue<List<Manual>> manualWritingQueue = new LinkedBlockingQueue();
+        BlockingQueue<Manual> downloadingQueue = initDownloadingQueue();
         ExecutorService service = Executors.newCachedThreadPool();
         List<Future>producerFutures = new ArrayList<>();
         List<Future>processorFutures= new ArrayList<>();
+        List<Future>downloadingFutures= new ArrayList<>();
         for (int i = startPage; i <finishPage ; i++) {
             Future<String>ft = service.submit(new HtmlPageProducer(htmlPageQueue,cookieStore,i) {
             });
             producerFutures.add(ft);
         }
-        for (int i = 0; i <5 ; i++) {
+        for (int i = 0; i <10 ; i++) {
             Future<String>ft = service.submit(new HtmlPageProcessor(htmlPageQueue,manualWritingQueue) {
             });
             processorFutures.add(ft);
         }
+        for (int i = 0; i <10 ; i++) {
+            Future<String>ft = service.submit(new ManualDownloader(downloadingQueue) {
+            });
+            downloadingFutures.add(ft);
+        }
         new Thread(new ManualToFileWriter(manualWritingQueue)).start();
+     //   new Thread(new ManualToFileWriter(manualWritingQueue)).start();
         while (isRunning(producerFutures)){
             try {
                 TimeUnit.SECONDS.sleep(1);
@@ -48,21 +61,12 @@ public class ManualProducingController {
             }
         }
         System.out.println("writer started");
-        try {
-            htmlPageQueue.put(TOXIC_WORD);
-        } catch (InterruptedException ignored) {
-        }
+        htmlPageQueue.put(TOXIC_WORD);
         while (isRunning(processorFutures)){
-            try {
                 System.out.println("processors running");
                 TimeUnit.SECONDS.sleep(1);
-            } catch (InterruptedException ignored) {
-            }
         }
-        try {
-            manualWritingQueue.put(TOXIC_LIST);
-        } catch (InterruptedException ignored) {
-        }
+        manualWritingQueue.put(TOXIC_LIST);
         service.shutdown();
     }
 
@@ -72,5 +76,14 @@ public class ManualProducingController {
             if (!future.isDone())return true;
         }
         return false;
+    }
+    public static BlockingQueue<Manual> initDownloadingQueue() throws InterruptedException {
+        LinkedBlockingQueue result = new LinkedBlockingQueue();
+        List<Manual> manuals = ManualSerializer.getManualsForDownload();
+        for (Manual m : manuals){
+            result.put(m);
+        }
+
+        return result;
     }
 }

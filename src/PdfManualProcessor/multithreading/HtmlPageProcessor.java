@@ -1,9 +1,8 @@
-package PdfManualProcessor.multitreading;
+package PdfManualProcessor.multithreading;
 
 import PdfManualProcessor.Manual;
 import PdfManualProcessor.service.ManualPageParser;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;

@@ -15,6 +15,7 @@ import java.util.List;
  */
 public class ManualSerializer {
     private static final Path RAW_DATA_FILE =Paths.get("src\\PdfManualProcessor\\res\\allManuals.txt");
+    private static final Path DOWNLOADED_MANUAL_FILE =Paths.get("src\\PdfManualProcessor\\res\\downloadedManuals.txt");
     private static final Path SURE_DELETE_MANUALS =Paths.get("src\\PdfManualProcessor\\res\\sureDelete.txt");
     private static final Path CHECK_DELETE_MANUALS =Paths.get("src\\PdfManualProcessor\\res\\checkDelete.txt");
     private static final Path NOT_OPEN =Paths.get("src\\PdfManualProcessor\\res\\checkDelete.txt");
@@ -70,6 +71,15 @@ public class ManualSerializer {
         result.removeAll(getManualsFromFile(CHECK_DELETE_MANUALS));
 
         return result;
+    }
+    public static List<Manual> getManualsForDownload(){
+        List<Manual> allManuals = getManualsFromFile(RAW_DATA_FILE);
+        if (allManuals.size()==0)return new ArrayList<>();
+        List<Manual> downloadedManuals = getManualsFromFile(DOWNLOADED_MANUAL_FILE);
+        if(downloadedManuals.size()==0) return allManuals;
+        allManuals.removeAll(downloadedManuals);
+
+        return allManuals;
     }
     /**
      * to be deleted after class is complete.
