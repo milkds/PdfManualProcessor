@@ -15,6 +15,8 @@ public class ManualProducingController {
     static final List<Manual> TOXIC_LIST = new ArrayList<>();
     static final Manual TOXIC_MANUAL = new Manual("","",0);
 
+    private static final BlockingQueue<String> htmlPageQueue;
+
     public static void main(String[] args) throws InterruptedException {
         try {
             CookieStore cookieStore = LoginHandler.getCookies("login","password");
@@ -25,10 +27,8 @@ public class ManualProducingController {
 
     }
 
-    /***
-     *
-     * Need to put Manuals to downloadQueue to make second writer write them.
-     */
+    private ManualProducingController() {
+    }
 
     public static void getManuals(int startPage, int finishPage, CookieStore cookieStore) throws InterruptedException {
         BlockingQueue<String> htmlPageQueue = new LinkedBlockingQueue();
