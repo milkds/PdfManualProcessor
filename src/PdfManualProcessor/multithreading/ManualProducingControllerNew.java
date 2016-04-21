@@ -1,6 +1,7 @@
 package PdfManualProcessor.multithreading;
 
 import PdfManualProcessor.Manual;
+import PdfManualProcessor.service.ManualSerializer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,5 +24,6 @@ public class ManualProducingControllerNew {
         for (int i = 0; i < numberOfTreads ; i++) {
             new Thread(new ManualDownloader(downloadingQueue,writingQueue)).start();
         }
+        new Thread(new ManualToFileWriter(writingQueue, ManualSerializer.getDownloadedManualFile())).start();
     }
 }
