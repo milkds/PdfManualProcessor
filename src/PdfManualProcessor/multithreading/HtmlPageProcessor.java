@@ -7,9 +7,9 @@ import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
 
-public class HtmlPageProcessor implements Callable{
+public class HtmlPageProcessor /*implements Callable*/{
 
-    private final BlockingQueue<String> htmlPageQueue;
+ /*   private final BlockingQueue<String> htmlPageQueue;
     private final BlockingQueue<List<Manual>> manualWritingQueue;
     private BlockingQueue<Manual> downloadingQueue;
 
@@ -20,7 +20,7 @@ public class HtmlPageProcessor implements Callable{
         this.downloadingQueue = downloadingQueue;
     }
 
-    /*@Override
+    *//*@Override
     public void run() {
        while (true){
            try {
@@ -37,7 +37,7 @@ public class HtmlPageProcessor implements Callable{
                break;
            }
        }
-    }*/
+    }*//*
 
     @Override
     public Object call() throws Exception {
@@ -56,5 +56,5 @@ public class HtmlPageProcessor implements Callable{
                 }
         }
         return "";
-    }
+    }*/
 }

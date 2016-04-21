@@ -28,7 +28,7 @@ import java.util.concurrent.Callable;
  *
  *
  */
-public class ManualDownloader implements Callable<String> {
+public class ManualDownloader implements Runnable {
     private BlockingQueue<Manual> downloadingQueue;
     private final BlockingQueue<List<Manual>> manualWritingQueue;
 
@@ -42,8 +42,8 @@ public class ManualDownloader implements Callable<String> {
         System.out.println("Manual downloaded: "+m.getPdfUrl());
     }
 
-    @Override
-    public String call() throws Exception {
+
+    /*public String call() throws Exception {
         while (true){
             Manual m = downloadingQueue.take();
             if (m.equals(ManualProducingController.TOXIC_MANUAL)){
@@ -54,5 +54,24 @@ public class ManualDownloader implements Callable<String> {
             manualWritingQueue.put(Collections.singletonList(m));
         }
         return "";
+    }*/
+
+    @Override
+    public void run() {
+        while (true){
+            Manual m = null;
+            try {
+                m = downloadingQueue.take();
+                if (m==null){
+                    downloadingQueue.put(m);
+                    break;
+                }
+                downloadManual(m);
+                manualWritingQueue.put(Collections.singletonList(m));
+            } catch (InterruptedException e) {
+              break;
+            }
+        }
+
     }
 }

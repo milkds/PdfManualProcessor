@@ -11,30 +11,34 @@ import java.util.List;
 import java.util.concurrent.*;
 
 public class ManualProducingController {
-    static final String TOXIC_WORD = "toxic";
+    /*static final String TOXIC_WORD = "toxic";
     static final List<Manual> TOXIC_LIST = new ArrayList<>();
     static final Manual TOXIC_MANUAL = new Manual("","",0);
 
-    private static final BlockingQueue<String> htmlPageQueue;
+    private final BlockingQueue<String> htmlPageQueue= new LinkedBlockingQueue();
+    private final BlockingQueue<List<Manual>>  manualWritingQueue= new LinkedBlockingQueue();
+    private final BlockingQueue<List<Manual>> downloadedManualWritingQueue= new LinkedBlockingQueue();
+    private final BlockingQueue<Manual> downloadingQueue;
 
     public static void main(String[] args) throws InterruptedException {
         try {
             CookieStore cookieStore = LoginHandler.getCookies("login","password");
-            getManuals(80,90,cookieStore);
+            new ManualProducingController().getManuals(80,90,cookieStore);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
     }
 
-    private ManualProducingController() {
+    public ManualProducingController() throws InterruptedException {
+        downloadingQueue = initDownloadingQueue();
     }
 
-    public static void getManuals(int startPage, int finishPage, CookieStore cookieStore) throws InterruptedException {
-        BlockingQueue<String> htmlPageQueue = new LinkedBlockingQueue();
-        BlockingQueue<List<Manual>> manualWritingQueue = new LinkedBlockingQueue();
+    public void getManuals(int startPage, int finishPage, CookieStore cookieStore) throws InterruptedException {
+     //  BlockingQueue<String> htmlPageQueue = new LinkedBlockingQueue();
+       *//* BlockingQueue<List<Manual>> manualWritingQueue = new LinkedBlockingQueue();
         BlockingQueue<List<Manual>> downloadedManualWritingQueue = new LinkedBlockingQueue();
-        BlockingQueue<Manual> downloadingQueue = initDownloadingQueue();
+        BlockingQueue<Manual> downloadingQueue = initDownloadingQueue();*//*
         ExecutorService service = Executors.newCachedThreadPool();
         List<Future>producerFutures = new ArrayList<>();
         List<Future>processorFutures= new ArrayList<>();
@@ -54,19 +58,14 @@ public class ManualProducingController {
             });
             downloadingFutures.add(ft);
         }
-        new Thread(new ManualToFileWriter(manualWritingQueue, ManualSerializer.getRawDataFile())).start();
-        new Thread(new ManualToFileWriter(downloadedManualWritingQueue, ManualSerializer.getDownloadedManualFile())).start();
+       startWriters();
      //   new Thread(new ManualToFileWriter(manualWritingQueue)).start();
         while (isRunning(producerFutures)){
-            try {
                 TimeUnit.SECONDS.sleep(1);
-            } catch (InterruptedException ignored) {
-            }
         }
         System.out.println("writer started");
         htmlPageQueue.put(TOXIC_WORD);
         while (isRunning(processorFutures)){
-
                 TimeUnit.SECONDS.sleep(1);
         }
         manualWritingQueue.put(TOXIC_LIST);
@@ -95,4 +94,9 @@ public class ManualProducingController {
 
         return result;
     }
+    public void startWriters(){
+        new Thread(new ManualToFileWriter(manualWritingQueue, ManualSerializer.getRawDataFile())).start();
+        new Thread(new ManualToFileWriter(downloadedManualWritingQueue, ManualSerializer.getDownloadedManualFile())).start();}*/
+
+
 }
