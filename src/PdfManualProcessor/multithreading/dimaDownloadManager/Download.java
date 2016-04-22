@@ -1,10 +1,14 @@
 package PdfManualProcessor.multithreading.dimaDownloadManager;
 
+import org.apache.commons.net.ftp.FTP;
+import org.apache.commons.net.ftp.FTPFile;
 import sun.net.www.protocol.ftp.FtpURLConnection;
 
 import java.io.*;
 import java.net.*;
 import java.util.*;
+
+import org.apache.commons.net.ftp.FTPClient;
 
 // This class downloads a file from a URL.
 public class Download extends Observable implements Runnable {
@@ -97,8 +101,70 @@ public class Download extends Observable implements Runnable {
 
     // Download file.
     public void run() {
+        if (url.toString().startsWith("http")) startHttpDownload();
+        if (url.toString().startsWith("ftp")) startFtpDownload();
+    }
+
+    private static void showServerReply(FTPClient ftpClient) {
+        String[] replies = ftpClient.getReplyStrings();
+        if (replies != null && replies.length > 0) {
+            for (String aReply : replies) {
+                System.out.println("SERVER: " + aReply);
+            }
+        }
+    }
+
+    public void startFtpDownload()  {
+        FTPClient client = new FTPClient();
+        FileOutputStream fos = null;
+
+        System.out.println(url.getHost());
+
+        try {
+
+
+            client.connect(url.getHost(),21);
+            System.out.println(client.getDataConnectionMode());
+            showServerReply(client);
+
+
+
+        client.login("b5dpua_test", "test");
+
+
+
+
+            String[] split = url.toString().split("/");
+
+            System.out.println( split.length );
+            System.out.println( split[split.length-1] );
+            String filename = split[split.length-1];
+
+
+        fos = new FileOutputStream("../Downloaded/"  + filename);
+
+           /* client.enterLocalPassiveMode();
+            client.setFileType(FTP.BINARY_FILE_TYPE);*/
+
+            System.out.println( client.retrieveFile(filename, fos) );
+        fos.close();
+        client.disconnect();
+
+
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public void startHttpDownload() {
         RandomAccessFile file = null;
         InputStream stream = null;
+
+        System.out.println(url.getHost());
+
 
         try {
             // Open connection to URL.
@@ -109,11 +175,10 @@ public class Download extends Observable implements Runnable {
                  connection = (FtpURLConnection) url.openConnection();
             }*/
 
-                //if (url.toString().startsWith("http")) {
-                     connection =
-                            (HttpURLConnection) url.openConnection();
-                //}
-
+            //if (url.toString().startsWith("http")) {
+            connection =
+                    (HttpURLConnection) url.openConnection();
+            //}
 
 
             // Specify what portion of file to download.
@@ -131,8 +196,6 @@ public class Download extends Observable implements Runnable {
             }
 
             System.out.println(connection.getResponseCode());
-
-
 
 
             // Check for valid content length.
@@ -153,7 +216,7 @@ public class Download extends Observable implements Runnable {
             // Open file and seek to the end of it.
 
             //Захардкоден путь к папке с загрузками
-            file = new RandomAccessFile("../Downloaded/"+getFileName(url), "rw");
+            file = new RandomAccessFile("../Downloaded/" + getFileName(url), "rw");
             file.seek(downloaded);
 
             stream = connection.getInputStream();
@@ -191,14 +254,17 @@ public class Download extends Observable implements Runnable {
             if (file != null) {
                 try {
                     file.close();
-                } catch (Exception e) {}
+                } catch (Exception e) {
+                }
             }
+
 
             // Close connection to server.
             if (stream != null) {
                 try {
                     stream.close();
-                } catch (Exception e) {}
+                } catch (Exception e) {
+                }
             }
 
             //добавить запись имени загрженного в список загруженных

@@ -46,7 +46,8 @@ public class ManualDownloader implements Runnable {
 
 
 
-        downloadManual(new Manual("фтп","ftp://ftp.daper.net/pub/soft/moc/stable/moc-1.1.0.tar.gz"));
+       downloadManual(new Manual("ftp","ftp://b5dpua.ftp.ukraine.com.ua/search.tpl"));
+      //  downloadManual(new Manual("http","http://commons.apache.org/proper/commons-net/images/commons-logo.png"));
     }
 
     public static void downloadManual(Manual m){
