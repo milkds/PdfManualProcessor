@@ -13,7 +13,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-public class ClassForTesting {
+public class classForTesting {
     static final String URL = "http://74.117.180.69:83/work/pdfapprove/index.php";
 
     public static void main(String[] args)

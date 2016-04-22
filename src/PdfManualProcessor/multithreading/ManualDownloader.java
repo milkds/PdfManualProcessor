@@ -1,12 +1,13 @@
 package PdfManualProcessor.multithreading;
 
 import PdfManualProcessor.Manual;
+import PdfManualProcessor.multithreading.dimaDownloadManager.Download;
 
-import java.util.Arrays;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.Callable;
 
 /**
  * This class downloads Manuals to Disk.
@@ -32,14 +33,39 @@ public class ManualDownloader implements Runnable {
     private BlockingQueue<Manual> downloadingQueue;
     private final BlockingQueue<List<Manual>> manualWritingQueue;
 
+
+
     public ManualDownloader(BlockingQueue<Manual> downloadingQueue, BlockingQueue<List<Manual>> manualWritingQueue) {
         this.downloadingQueue = downloadingQueue;
         this.manualWritingQueue = manualWritingQueue;
     }
-    //
+
+
+    public static void main(String[] args) {
+
+
+
+
+        downloadManual(new Manual("фтп","ftp://ftp.daper.net/pub/soft/moc/stable/moc-1.1.0.tar.gz"));
+    }
 
     public static void downloadManual(Manual m){
-        System.out.println("Manual downloaded: "+m.getPdfUrl());
+
+        //System.out.println(m.getPdfUrl());
+
+        URL url = null;
+        try {
+           url = new URL(m.getPdfUrl());
+
+        } catch (MalformedURLException e) {System.out.println("не Шмогли конвертировать пдфУРЛ в объект УРЛ");}
+
+       System.out.println(url);
+
+        Download download = new Download(url);
+
+      //  System.out.println(download);
+
+       // System.out.println("Manual downloaded: "+m.getPdfUrl());
     }
 
 
