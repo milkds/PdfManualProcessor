@@ -32,16 +32,15 @@ public abstract class ManualFilter {
         for (Manual manual : manuals){
             String checkString;
             if (checkByBody) {
-                 checkString = manual.getBody();
+                 checkString = manual.getBody(ManualReader.NUMBER_OF_PAGES_TO_READ);
             }
             else checkString=manual.getPdfUrl();
             if (manualContainsWordFromDictionary(checkString,sureDeleteDictionary)) {
                 sureDeleteManuals.add(manual);
-                break;
+                continue;
             }
             if (manualContainsWordFromDictionary(checkString,checkDeleteDictionary)) {
                 checkDeleteManuals.add(manual);
-                break;
             }
         }
 
@@ -49,5 +48,5 @@ public abstract class ManualFilter {
         ManualSerializer.saveCheckDeleteManualsToFile(checkDeleteManuals);
     }
 
-    //// TODO: 30.03.2016 write JavaDocs. Decide how to implement filtering not Open manuals.
+    //// TODO: 30.03.2016 write JavaDocs. Decide how to implement filtering not Open manuals. add check with premises
 }

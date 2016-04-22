@@ -1,0 +1,14 @@
+<component name="libraryTable">
+  <library name="org.bouncycastle:bcprov-ext-jdk14:1.51" type="repository">
+    <properties maven-id="org.bouncycastle:bcprov-ext-jdk14:1.51" />
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/bcprov-ext-jdk14-1.51.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$PROJECT_DIR$/lib/bcprov-ext-jdk14-1.51-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/lib/bcprov-ext-jdk14-1.51-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

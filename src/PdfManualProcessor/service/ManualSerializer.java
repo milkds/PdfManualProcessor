@@ -15,6 +15,7 @@ import java.util.List;
  */
 public class ManualSerializer {
     private static final Path RAW_DATA_FILE =Paths.get("src\\PdfManualProcessor\\res\\allManuals.txt");
+    private static final Path DOWNLOADED_MANUAL_FILE =Paths.get("src\\PdfManualProcessor\\res\\downloadedManuals.txt");
     private static final Path SURE_DELETE_MANUALS =Paths.get("src\\PdfManualProcessor\\res\\sureDelete.txt");
     private static final Path CHECK_DELETE_MANUALS =Paths.get("src\\PdfManualProcessor\\res\\checkDelete.txt");
     private static final Path NOT_OPEN =Paths.get("src\\PdfManualProcessor\\res\\checkDelete.txt");
@@ -26,10 +27,12 @@ public class ManualSerializer {
             stringWriter.write(manual.getId());
             stringWriter.write("\t");
             stringWriter.write(manual.getPdfUrl());
+            stringWriter.write("\t");
+            stringWriter.write(manual.getSize()+"");
             stringWriter.write(System.lineSeparator());
         }
 
-        try (FileWriter fileWriter = new FileWriter(filePath.toAbsolutePath().toFile())) {
+        try (FileWriter fileWriter = new FileWriter(filePath.toAbsolutePath().toFile(),true)) {
             fileWriter.write(stringWriter.toString());
             stringWriter.close();
         } catch (IOException e) {
@@ -42,7 +45,7 @@ public class ManualSerializer {
             while (fileReader.ready()){
                 String line = fileReader.readLine();
                 String[]split = line.split("\t");
-                result.add(new Manual(split[0],split[1]));
+                result.add(new Manual(split[0],split[1],Integer.parseInt(split[2])));
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -69,6 +72,21 @@ public class ManualSerializer {
 
         return result;
     }
+    public static List<Manual> getManualsForDownload(){
+        List<Manual> allManuals = getManualsFromFile(RAW_DATA_FILE);
+        if (allManuals.size()==0)return new ArrayList<>();
+        List<Manual> downloadedManuals = getManualsFromFile(DOWNLOADED_MANUAL_FILE);
+        if(downloadedManuals.size()==0) return allManuals;
+        allManuals.removeAll(downloadedManuals);
+
+        return allManuals;
+    }
+    public static Path getRawDataFile() {
+        return RAW_DATA_FILE;
+    }
+    public static Path getDownloadedManualFile() {
+        return DOWNLOADED_MANUAL_FILE;
+    }
     /**
      * to be deleted after class is complete.
      */
@@ -81,5 +99,5 @@ public class ManualSerializer {
     }
 
 
-    // TODO:  implement exception processing. Write JavaDocs.
+    // TODO:  implement exception processing. Write JavaDocs. CheckFileWriting for case with interrupted writing.
 }

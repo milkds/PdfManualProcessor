@@ -37,24 +37,27 @@ public class LoginHandler {
         httpclient.close();
         return cookieStore;
     }
-    public static String getHtmlPage(CookieStore cookieStore,int pageNo) throws IOException {
+    public static String getHtmlPage(CookieStore cookieStore,int pageNo) /*throws IOException*/ {
         CloseableHttpClient httpclient = HttpClients.createDefault();
         HttpClientContext context = HttpClientContext.create();
         context.setCookieStore(cookieStore);
         String url = MANUALS_PAGE_URL+pageNo;
         HttpGet httpGet = new HttpGet(url);
-        HttpResponse httpResponse2 = httpclient.execute(httpGet,context);
-        BufferedReader rd = new BufferedReader(new InputStreamReader(httpResponse2.getEntity().getContent()));
-
         StringBuilder result = new StringBuilder();
-        String line;
-        while ((line = rd.readLine()) != null) {
-            result.append(line);
-            result.append("\n");
+        HttpResponse httpResponse = null;
+        try {
+            httpResponse = httpclient.execute(httpGet,context);
+            String line;
+            BufferedReader rd = new BufferedReader(new InputStreamReader(httpResponse.getEntity().getContent()));
+            while ((line = rd.readLine()) != null) {
+                result.append(line);
+                result.append("\n");
+            }
+            rd.close();
+            httpclient.close();
+        } catch (IOException e) {
+          return "";
         }
-        rd.close();
-
-        httpclient.close();
         return result.toString();
     }
 
