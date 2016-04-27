@@ -3,13 +3,12 @@ package PdfManualProcessor; /**
  */
 
 import PdfManualProcessor.service.LoginHandler;
-import org.jsoup.*;
+import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -51,4 +50,6 @@ public class classForTesting {
         System.out.println(list1);
         System.out.println(list2);
     }
+
+
 }
