@@ -1,12 +1,14 @@
 package PdfManualProcessor.multithreading;
 
+import PdfManualProcessor.Manual;
 import PdfManualProcessor.service.LoginHandler;
+import PdfManualProcessor.service.ManualPageParser;
 import org.apache.http.client.CookieStore;
 
+import java.util.List;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.Callable;
 
-public class HtmlPageProducer implements Callable{
+public class HtmlPageProducer implements Runnable{
     /**
      * This class gets HTML pages with up to 10 manual links on it.
      */
@@ -20,15 +22,16 @@ public class HtmlPageProducer implements Callable{
         this.cookieStore = cookieStore;
         this.pageNo = pageNo;
     }
+
     @Override
-    public Object call() throws Exception {
+    public void run() {
         String pageBody = LoginHandler.getHtmlPage(cookieStore,pageNo);
+        List<Manual> manuals = ManualPageParser.getManuals(pageBody);
         try {
             queue.put(pageBody);
             System.out.println(pageNo + " is put to queue.");
         }
         catch (InterruptedException ignored) {
         }
-        return "";
     }
 }

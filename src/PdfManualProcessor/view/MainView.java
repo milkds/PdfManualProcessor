@@ -6,7 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class MainView extends JFrame implements View {
-    private JButton download, filter;
+    private JButton download, filter, refresh;
     private JScrollPane scroll;
     private JPanel box;
     private Console console;
@@ -23,14 +23,22 @@ public class MainView extends JFrame implements View {
         download.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("click click");
             }
         });
         filter = new JButton("Filter manuals");
+        refresh = new JButton("Refresh manual list");
+        refresh.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ViewHandler.fireEventRefreshManualList();
+            }
+        });
 
-        box = new JPanel(new GridLayout(2, 1));
+        box = new JPanel(new GridLayout(3, 1,0,5));
+        box.add(refresh);
         box.add(download);
         box.add(filter);
+
         JPanel west = new JPanel(new GridBagLayout());
         west.add(box);
 

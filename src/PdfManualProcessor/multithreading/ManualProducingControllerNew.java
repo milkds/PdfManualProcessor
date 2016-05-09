@@ -5,7 +5,6 @@ import PdfManualProcessor.service.ManualSerializer;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -25,5 +24,9 @@ public class ManualProducingControllerNew {
             new Thread(new ManualDownloader(downloadingQueue,writingQueue)).start();
         }
         new Thread(new ManualToFileWriter(writingQueue, ManualSerializer.getDownloadedManualFile())).start();
+    }
+
+    public static void refreshManualList(){
+
     }
 }

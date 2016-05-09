@@ -22,7 +22,7 @@ public class ManualPageParser {
             if(Objects.equals(element.attr("name"), "url")) {
                 String id = element.attr("id").substring(3);
                 String pdfUrl = element.attr("value");
-                result.add(new Manual(id, pdfUrl));
+                result.add(new Manual(id, pdfUrl,0));
             }
         }
         return result;
