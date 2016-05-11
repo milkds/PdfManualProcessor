@@ -3,8 +3,6 @@ package PdfManualProcessor.service;
 import PdfManualProcessor.Manual;
 
 import java.io.*;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -51,6 +49,9 @@ public class ManualSerializer {
             e.printStackTrace();
         }
         return result;
+    }
+    public static List<Manual> getManualsFromFile (){
+        return getManualsFromFile(RAW_DATA_FILE);
     }
 
 

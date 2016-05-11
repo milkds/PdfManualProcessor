@@ -46,5 +46,9 @@ public class ManualProducingControllerNew {
             } catch (InterruptedException ignored) {
             }
         }
+        List<Manual> allManuals = ManualSerializer.getManualsFromFile();
+        temp.removeAll(allManuals);
+        ManualSerializer.saveRawManualsToFile(temp);
+        System.out.println("all Manuals are up-to-date");
     }
 }
