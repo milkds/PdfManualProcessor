@@ -11,6 +11,7 @@ public class MainView extends JFrame implements View {
     private JPanel box;
     private Console console;
 
+
     public MainView(Console console) {
         super();
         this.console=console;
@@ -30,7 +31,7 @@ public class MainView extends JFrame implements View {
         refresh.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                ViewHandler.fireEventRefreshManualList();
+            //   ViewHandler.fireEventRefreshManualList();
             }
         });
 
