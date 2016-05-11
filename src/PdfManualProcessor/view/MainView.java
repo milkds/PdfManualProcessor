@@ -10,11 +10,13 @@ public class MainView extends JFrame implements View {
     private JScrollPane scroll;
     private JPanel box;
     private Console console;
+    private ViewHandler viewHandler;
 
 
-    public MainView(Console console) {
+    public MainView(Console console, ViewHandler viewHandler) {
         super();
         this.console=console;
+        this.viewHandler = viewHandler;
         init();
     }
 
@@ -31,7 +33,7 @@ public class MainView extends JFrame implements View {
         refresh.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-            //   ViewHandler.fireEventRefreshManualList();
+               viewHandler.fireEventRefreshManualList();
             }
         });
 
@@ -56,6 +58,6 @@ public class MainView extends JFrame implements View {
 
     public static void main(String[] args) {
         Console console = new Console();
-        new MainView(console);
+        new MainView(console, null);
     }
 }

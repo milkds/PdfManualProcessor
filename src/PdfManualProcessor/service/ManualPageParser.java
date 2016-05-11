@@ -1,6 +1,7 @@
 package PdfManualProcessor.service;
 
 import PdfManualProcessor.Manual;
+import org.apache.http.client.CookieStore;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -27,16 +28,26 @@ public class ManualPageParser {
         }
         return result;
     }
+    public static int getManualsQuantity(String pageBody){
+        Document doc = Jsoup.parse(pageBody);
+        String total; //total manuals for User.
+        String done; //total manuals done by User
+        String s; //just for easy substring extract
+        List<Element> elements = doc.getElementsByClass("done");
+        s = elements.get(1).text();
+        total = s.substring(s.indexOf(" ")+1);
+        done = elements.get(2).getElementsByAttribute("id").text();
+
+        return Integer.parseInt(total)-Integer.parseInt(done);
+    }
 
     public static void main(String[] args) {
-        List<Manual> manuals = new ArrayList<>();
         try {
-        manuals=getManuals(LoginHandler.getHtmlPage(LoginHandler.getCookies("LOGIN","PASSWORD"),10));
+            CookieStore cookieStore = LoginHandler.getCookies("","");
+            String page = LoginHandler.getHtmlPage(cookieStore,1);
+            getManualsQuantity(page);
         } catch (IOException e) {
             e.printStackTrace();
-        }
-        for (Manual m : manuals){
-            System.out.println(m.getPdfUrl()+" "+ m.getId()+" "+ m.getSize());
         }
     }
 

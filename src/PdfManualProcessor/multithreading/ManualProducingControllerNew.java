@@ -2,6 +2,7 @@ package PdfManualProcessor.multithreading;
 
 import PdfManualProcessor.Manual;
 import PdfManualProcessor.service.LoginHandler;
+import PdfManualProcessor.service.ManualPageParser;
 import PdfManualProcessor.service.ManualSerializer;
 import org.apache.http.client.CookieStore;
 
@@ -15,10 +16,7 @@ import java.util.concurrent.TimeUnit;
 public class ManualProducingControllerNew {
 
     public static void main(String[] args) throws InterruptedException {
-       // downloadManuals(new ArrayList<Manual>(),10);
-        int totalManuals = 151;  //implement according method
-        int totalPages = totalManuals/10;  //implement according method
-        System.out.println(totalManuals);
+
     }
 
     public static void downloadManuals(List<Manual> rawManuals, int numberOfTreads) throws InterruptedException {
@@ -36,7 +34,7 @@ public class ManualProducingControllerNew {
     public static void refreshManualList() throws IOException {
         List<Manual> temp = new ArrayList<>();
         CookieStore cookieStore = LoginHandler.getCookies("","");
-        int totalManuals = 151;  //implement according method
+        int totalManuals = ManualPageParser.getManualsQuantity(LoginHandler.getHtmlPage(cookieStore,1));  //implement according method
         int totalPages = totalManuals/10;  //implement according method
         if (totalManuals%10>0)totalPages++;
         for (int i = 1; i <totalPages ; i++) {
