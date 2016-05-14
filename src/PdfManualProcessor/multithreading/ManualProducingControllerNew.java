@@ -1,5 +1,6 @@
 package PdfManualProcessor.multithreading;
 
+import PdfManualProcessor.Controller;
 import PdfManualProcessor.Manual;
 import PdfManualProcessor.service.LoginHandler;
 import PdfManualProcessor.service.ManualPageParser;
@@ -15,8 +16,8 @@ import java.util.concurrent.TimeUnit;
 
 public class ManualProducingControllerNew {
 
-    public static void main(String[] args) throws InterruptedException {
-
+    public static void main(String[] args) throws InterruptedException, IOException {
+       // refreshManualList();
     }
 
     public static void downloadManuals(List<Manual> rawManuals, int numberOfTreads) throws InterruptedException {
@@ -31,14 +32,14 @@ public class ManualProducingControllerNew {
         new Thread(new ManualToFileWriter(writingQueue, ManualSerializer.getDownloadedManualFile())).start();
     }
 
-    public static void refreshManualList() throws IOException {
+    public static void refreshManualList(Controller controller) throws IOException {
         List<Manual> temp = new ArrayList<>();
         CookieStore cookieStore = LoginHandler.getCookies("","");
-        int totalManuals = ManualPageParser.getManualsQuantity(LoginHandler.getHtmlPage(cookieStore,1));  //implement according method
+        int totalManuals = ManualPageParser.getManualsQuantity(LoginHandler.getHtmlPage(cookieStore,1));
         int totalPages = totalManuals/10;  //implement according method
         if (totalManuals%10>0)totalPages++;
-        for (int i = 1; i <totalPages ; i++) {
-            new HtmlPageProducer(temp,cookieStore,i).run();
+        for (int i = 1; i <=totalPages ; i++) {
+            new Thread(new HtmlPageProducer(temp,cookieStore,i)).start();
         }
         while (temp.size()<totalManuals){
             try {

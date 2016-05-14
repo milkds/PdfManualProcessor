@@ -7,4 +7,8 @@ public class ViewHandler {
     public void fireEventRefreshManualList() {
         controller.onRefreshManualList();
     }
+
+    public void setController(Controller controller) {
+        this.controller = controller;
+    }
 }

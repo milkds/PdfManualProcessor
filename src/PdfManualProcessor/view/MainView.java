@@ -33,7 +33,13 @@ public class MainView extends JFrame implements View {
         refresh.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-               viewHandler.fireEventRefreshManualList();
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        viewHandler.fireEventRefreshManualList();
+                    }
+                }).start();
+
             }
         });
 
