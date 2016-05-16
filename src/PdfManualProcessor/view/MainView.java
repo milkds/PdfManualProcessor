@@ -6,9 +6,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class MainView extends JFrame implements View {
-    private JButton download, filter, refresh;
+    private JButton download, filter, refresh,next, prev;
     private JScrollPane scroll;
-    private JPanel box;
+    private JPanel box,openers;
+    private JTextField nextQuantity, prevQuantity;
+    private JLabel nManuals, pManuals;
     private Console console;
     private ViewHandler viewHandler;
 
@@ -42,11 +44,13 @@ public class MainView extends JFrame implements View {
 
             }
         });
+        initOpeners(); // different abstraction level - rework.
+        box = new JPanel(new GridLayout(4, 1,0,5));
 
-        box = new JPanel(new GridLayout(3, 1,0,5));
         box.add(refresh);
         box.add(download);
         box.add(filter);
+        box.add(openers);
 
         JPanel west = new JPanel(new GridBagLayout());
         west.add(box);
@@ -59,6 +63,23 @@ public class MainView extends JFrame implements View {
         pack();
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
+    }
+
+    private void initOpeners(){
+        openers = new JPanel(new GridLayout(2, 3,5,5));
+        next = new JButton("Open next");
+        prev = new JButton("Open previous");
+        nextQuantity = new JTextField();
+        prevQuantity = new JTextField();
+        nManuals = new JLabel("manuals");
+        pManuals = new JLabel("manuals");
+
+        openers.add(next);
+        openers.add(nextQuantity);
+        openers.add(nManuals);
+        openers.add(prev);
+        openers.add(prevQuantity);
+        openers.add(pManuals);
     }
 
 
