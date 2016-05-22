@@ -11,15 +11,10 @@ public class Controller {
         Controller controller = new Controller();
         Model model = new Model(controller);
         controller.setModel(model);
-        ViewHandler viewHandler = new ViewHandler();
-        viewHandler.setController(controller);
-        MainView m = new MainView(new Console(),viewHandler);
+        ViewHandler viewHandler = new ViewHandler(controller);
+        Console console = new Console();
+        new MainView(console, viewHandler);
     }
-
-
-
-
-
 
     public void onRefreshManualList() {
         model.refreshManualList();
@@ -27,5 +22,9 @@ public class Controller {
 
     public void setModel(Model model) {
         this.model = model;
+    }
+
+    public void onOpenManualsInBrowser(int value) {
+        model.openManualsInBrowser(value);
     }
 }

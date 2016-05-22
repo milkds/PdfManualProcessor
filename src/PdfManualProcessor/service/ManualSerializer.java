@@ -16,7 +16,8 @@ public class ManualSerializer {
     private static final Path DOWNLOADED_MANUAL_FILE =Paths.get("src\\PdfManualProcessor\\res\\downloadedManuals.txt");
     private static final Path SURE_DELETE_MANUALS =Paths.get("src\\PdfManualProcessor\\res\\sureDelete.txt");
     private static final Path CHECK_DELETE_MANUALS =Paths.get("src\\PdfManualProcessor\\res\\checkDelete.txt");
-    private static final Path NOT_OPEN =Paths.get("src\\PdfManualProcessor\\res\\checkDelete.txt");
+    private static final Path NOT_OPEN =Paths.get("src\\PdfManualProcessor\\res\\notOpen.txt");
+    private static final Path PROCESSED_MANUALS =Paths.get("src\\PdfManualProcessor\\res\\processedManuals.txt");
 
 
     public static void saveManualsToFile(List<Manual> manuals, Path filePath) {
@@ -50,7 +51,7 @@ public class ManualSerializer {
         }
         return result;
     }
-    public static List<Manual> getManualsFromFile (){
+    public static List<Manual> getAllManualsFromFile(){
         return getManualsFromFile(RAW_DATA_FILE);
     }
 
@@ -82,12 +83,28 @@ public class ManualSerializer {
 
         return allManuals;
     }
+    public static List<Manual> getManualsForOpening(){
+        List<Manual> result = getAllManualsFromFile();
+        List<Manual> processedManuals = getManualsFromFile(PROCESSED_MANUALS);
+        result.removeAll(processedManuals);
+
+        return result;
+    }
     public static Path getRawDataFile() {
         return RAW_DATA_FILE;
     }
     public static Path getDownloadedManualFile() {
         return DOWNLOADED_MANUAL_FILE;
     }
+
+
+
+
+
+
+
+
+
     /**
      * to be deleted after class is complete.
      */

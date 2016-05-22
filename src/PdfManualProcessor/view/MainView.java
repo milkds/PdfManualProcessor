@@ -9,11 +9,11 @@ public class MainView extends JFrame implements View {
     private JButton download, filter, refresh,next, prev;
     private JScrollPane scroll;
     private JPanel box,openers;
-    private JTextField nextQuantity, prevQuantity;
     private JLabel nManuals, pManuals;
     private Console console;
     private ViewHandler viewHandler;
-
+    private SpinnerModel nextModel,prevModel;
+    private JSpinner nextSpinner,prevSpinner;
 
     public MainView(Console console, ViewHandler viewHandler) {
         super();
@@ -60,25 +60,43 @@ public class MainView extends JFrame implements View {
         getContentPane().add(west, BorderLayout.WEST);
         getContentPane().add(scroll);
 
+
+
         pack();
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setVisible(true);
     }
 
     private void initOpeners(){
-        openers = new JPanel(new GridLayout(2, 3,5,5));
+        openers = new JPanel(new GridLayout(2,3,5,5));
         next = new JButton("Open next");
+        next.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                viewHandler.fireEventOpenManualsInBrowser((int)nextModel.getValue());
+            }
+        });
         prev = new JButton("Open previous");
-        nextQuantity = new JTextField();
-        prevQuantity = new JTextField();
+        prev.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+            }
+        });
+
         nManuals = new JLabel("manuals");
         pManuals = new JLabel("manuals");
 
+        nextModel = new SpinnerNumberModel(0,0,null,1);
+        prevModel = new SpinnerNumberModel(0,0,null,1);
+        nextSpinner = new JSpinner(nextModel);
+        prevSpinner = new JSpinner(prevModel);
+
         openers.add(next);
-        openers.add(nextQuantity);
+        openers.add(nextSpinner);
         openers.add(nManuals);
         openers.add(prev);
-        openers.add(prevQuantity);
+        openers.add(prevSpinner);
         openers.add(pManuals);
     }
 

@@ -1,6 +1,5 @@
 package PdfManualProcessor.multithreading;
 
-import PdfManualProcessor.Controller;
 import PdfManualProcessor.Manual;
 import PdfManualProcessor.service.LoginHandler;
 import PdfManualProcessor.service.ManualPageParser;
@@ -32,7 +31,7 @@ public class ManualProducingControllerNew {
         new Thread(new ManualToFileWriter(writingQueue, ManualSerializer.getDownloadedManualFile())).start();
     }
 
-    public static void refreshManualList(Controller controller) throws IOException {
+    public static void refreshManualList() throws IOException {
         List<Manual> temp = new ArrayList<>();
         CookieStore cookieStore = LoginHandler.getCookies("","");
         int totalManuals = ManualPageParser.getManualsQuantity(LoginHandler.getHtmlPage(cookieStore,1));
@@ -47,7 +46,7 @@ public class ManualProducingControllerNew {
             } catch (InterruptedException ignored) {
             }
         }
-        List<Manual> allManuals = ManualSerializer.getManualsFromFile();
+        List<Manual> allManuals = ManualSerializer.getAllManualsFromFile();
         temp.removeAll(allManuals);
         ManualSerializer.saveRawManualsToFile(temp);
         System.out.println("all Manuals are up-to-date");
