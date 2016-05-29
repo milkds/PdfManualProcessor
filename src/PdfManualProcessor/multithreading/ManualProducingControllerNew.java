@@ -8,6 +8,7 @@ import org.apache.http.client.CookieStore;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -35,7 +36,7 @@ public class ManualProducingControllerNew {
         List<Manual> temp = new ArrayList<>();
         CookieStore cookieStore = LoginHandler.getCookies("","");
         int totalManuals = ManualPageParser.getManualsQuantity(LoginHandler.getHtmlPage(cookieStore,1));
-        int totalPages = totalManuals/10;  //implement according method
+        int totalPages = totalManuals/10;
         if (totalManuals%10>0)totalPages++;
         for (int i = 1; i <=totalPages ; i++) {
             new Thread(new HtmlPageProducer(temp,cookieStore,i)).start();
@@ -48,7 +49,9 @@ public class ManualProducingControllerNew {
         }
         List<Manual> allManuals = ManualSerializer.getAllManualsFromFile();
         temp.removeAll(allManuals);
-        ManualSerializer.saveRawManualsToFile(temp);
+        allManuals.addAll(temp);
+        Collections.sort(allManuals);
+        ManualSerializer.refreshRawManualFile(allManuals);
         System.out.println("all Manuals are up-to-date");
     }
 }

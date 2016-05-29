@@ -22,16 +22,30 @@ public class Model {
         }
     }
 
-    public void openManualsInBrowser(int value){
+    public void openNextManualsInBrowser(int manualsToOpenQuantity){
         List<Manual> manualsToOpen = ManualSerializer.getManualsForOpening();
         int size = manualsToOpen.size();
-        if (value>size)value=size;
-        for (int i = 1; i <= value ; i++) {
-            Manual manual = manualsToOpen.get(i-1);
+        if (manualsToOpenQuantity>size)manualsToOpenQuantity=size-1;
+        for (int i = 0; i <= manualsToOpenQuantity ; i++) {
+            Manual manual = manualsToOpen.get(i);
             try {
-                new ManualPageOpener(manual).open();
+             ManualPageOpener.open(manual,true);
             } catch (Exception e) {
-                System.out.println("cannot open manual - "+manual.getPdfUrl());
+                System.out.println("cannot open manual - " + manual.getPdfUrl());
+            }
+        }
+    }
+
+    public void openPrevManualsInBrowser(int manualsToOpenQuantity) {
+        List<Manual> manualsToOpen = ManualSerializer.getManualsForReopening();
+        int size = manualsToOpen.size();
+        if (manualsToOpenQuantity>size)manualsToOpenQuantity=size-1;
+        for (int i = 0; i <= manualsToOpenQuantity ; i++) {
+            Manual manual = manualsToOpen.get(i);
+            try {
+                ManualPageOpener.open(manual,false);
+            } catch (Exception e) {
+                System.out.println("cannot open manual - " + manual.getPdfUrl());
             }
         }
     }

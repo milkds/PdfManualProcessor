@@ -13,7 +13,11 @@ public class ViewHandler {
         controller.onRefreshManualList();
     }
 
-    public void fireEventOpenManualsInBrowser(int value) {
-        controller.onOpenManualsInBrowser(value);
+    public void fireEventOpenNextManualsInBrowser(int value) {
+        controller.onOpenNextManualsInBrowser(value);
+    }
+
+    public void fireEventOpenPrevManualsInBrowser(int i) {
+        controller.onOpenPrevManualsInBrowser(i);
     }
 }

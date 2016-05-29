@@ -73,22 +73,23 @@ public class MainView extends JFrame implements View {
         next.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                viewHandler.fireEventOpenManualsInBrowser((int)nextModel.getValue());
+                //will be opening manuals from List<Manual>, so we reduce quantity to open by 1
+                viewHandler.fireEventOpenNextManualsInBrowser((int)nextModel.getValue()-1);
             }
         });
         prev = new JButton("Open previous");
         prev.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                viewHandler.fireEventOpenPrevManualsInBrowser((int)prevModel.getValue()-1);
             }
         });
 
         nManuals = new JLabel("manuals");
         pManuals = new JLabel("manuals");
 
-        nextModel = new SpinnerNumberModel(0,0,null,1);
-        prevModel = new SpinnerNumberModel(0,0,null,1);
+        nextModel = new SpinnerNumberModel(1,0,null,1);
+        prevModel = new SpinnerNumberModel(1,0,null,1);
         nextSpinner = new JSpinner(nextModel);
         prevSpinner = new JSpinner(prevModel);
 

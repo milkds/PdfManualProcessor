@@ -24,7 +24,11 @@ public class Controller {
         this.model = model;
     }
 
-    public void onOpenManualsInBrowser(int value) {
-        model.openManualsInBrowser(value);
+    public void onOpenNextManualsInBrowser(int value) {
+        model.openNextManualsInBrowser(value);
+    }
+
+    public void onOpenPrevManualsInBrowser(int i) {
+        model.openPrevManualsInBrowser(i);
     }
 }

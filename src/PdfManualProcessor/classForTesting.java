@@ -7,7 +7,10 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -17,7 +20,10 @@ public class classForTesting {
 
     public static void main(String[] args)
     {
-
+        File f = new File("C:\\Users\\AUSU\\IdeaProjects\\ideaGitLearning\\src\\PdfManualProcessor\\res\\downloadedManuals.txt");
+        try( PrintWriter pw = new PrintWriter(f)) {
+        } catch (FileNotFoundException ignored) {
+        }
     }
 
     protected static Document getHtmlDocument(int pageNo,String login, String password) {

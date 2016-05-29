@@ -3,7 +3,7 @@ package PdfManualProcessor;
 import PdfManualProcessor.service.ManualReader;
 import PdfManualProcessor.service.ManualSizeChecker;
 
-public class Manual {
+public class Manual implements Comparable {
 
     private String pdfUrl;
     private String id;
@@ -36,6 +36,25 @@ public class Manual {
         return size;
     }
 
+    @Override
+    public int compareTo(Object o) {
+        Manual m = (Manual)o;
+        return this.getId().compareTo(m.getId());
+    }
 
-    // TODO:  realize getBody() method.
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Manual)) return false;
+        Manual manual = (Manual) o;
+
+        return getPdfUrl().equals(manual.getPdfUrl()) && getId().equals(manual.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        int result = getPdfUrl().hashCode();
+        result = 31 * result + getId().hashCode();
+        return result;
+    }
 }

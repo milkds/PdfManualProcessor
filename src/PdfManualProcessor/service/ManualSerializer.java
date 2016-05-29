@@ -6,6 +6,7 @@ import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -17,7 +18,7 @@ public class ManualSerializer {
     private static final Path SURE_DELETE_MANUALS =Paths.get("src\\PdfManualProcessor\\res\\sureDelete.txt");
     private static final Path CHECK_DELETE_MANUALS =Paths.get("src\\PdfManualProcessor\\res\\checkDelete.txt");
     private static final Path NOT_OPEN =Paths.get("src\\PdfManualProcessor\\res\\notOpen.txt");
-    private static final Path PROCESSED_MANUALS =Paths.get("src\\PdfManualProcessor\\res\\processedManuals.txt");
+    private static final Path OPENED_MANUALS =Paths.get("src\\PdfManualProcessor\\res\\processedManuals.txt");
 
 
     public static void saveManualsToFile(List<Manual> manuals, Path filePath) {
@@ -35,7 +36,7 @@ public class ManualSerializer {
             fileWriter.write(stringWriter.toString());
             stringWriter.close();
         } catch (IOException e) {
-           e.printStackTrace();
+            e.printStackTrace();
         }
     }
     private static List<Manual> getManualsFromFile (Path filePath){
@@ -65,7 +66,15 @@ public class ManualSerializer {
     public static void saveCheckDeleteManualsToFile(List<Manual> manuals) {
         saveManualsToFile(manuals,CHECK_DELETE_MANUALS);
     }
-
+    public static void saveOpenedManualsToFile(List<Manual> manuals){
+        saveManualsToFile(manuals,OPENED_MANUALS);
+    }
+    public static void refreshRawManualFile(List<Manual> manuals){
+        try( PrintWriter pw = new PrintWriter(RAW_DATA_FILE.toFile())) {
+        } catch (FileNotFoundException ignored) {
+        }
+        saveManualsToFile(manuals,RAW_DATA_FILE);
+    }
     public static List<Manual> getManualsForFiltration(){
         List<Manual>result =getManualsFromFile(RAW_DATA_FILE);
         result.removeAll(getManualsFromFile(NOT_OPEN));
@@ -85,9 +94,14 @@ public class ManualSerializer {
     }
     public static List<Manual> getManualsForOpening(){
         List<Manual> result = getAllManualsFromFile();
-        List<Manual> processedManuals = getManualsFromFile(PROCESSED_MANUALS);
+        List<Manual> processedManuals = getManualsFromFile(OPENED_MANUALS);
         result.removeAll(processedManuals);
 
+        return result;
+    }
+    public static List<Manual> getManualsForReopening(){
+        List<Manual> result = getManualsFromFile(OPENED_MANUALS);
+        Collections.reverse(result);
         return result;
     }
     public static Path getRawDataFile() {
@@ -96,6 +110,8 @@ public class ManualSerializer {
     public static Path getDownloadedManualFile() {
         return DOWNLOADED_MANUAL_FILE;
     }
+
+
 
 
 
