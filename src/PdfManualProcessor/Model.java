@@ -49,4 +49,8 @@ public class Model {
             }
         }
     }
+
+    public static void deleteManualsInConsole(List<Manual> manuals){
+        ManualProducingControllerNew.deleteManualsInConsole(manuals);
+    }
 }

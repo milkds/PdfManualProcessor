@@ -54,4 +54,15 @@ public class ManualProducingControllerNew {
         ManualSerializer.refreshRawManualFile(allManuals);
         System.out.println("all Manuals are up-to-date");
     }
+
+    public static void deleteManualsInConsole(List<Manual> manuals) {
+        for (final Manual m : manuals){
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    LoginHandler.removeManualInConsole(m);
+                }
+            }).start();
+        }
+    }
 }

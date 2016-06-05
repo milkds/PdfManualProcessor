@@ -20,6 +20,8 @@ public class ManualSerializer {
     private static final Path NOT_OPEN =Paths.get("src\\PdfManualProcessor\\res\\notOpen.txt");
     private static final Path OPENED_MANUALS =Paths.get("src\\PdfManualProcessor\\res\\processedManuals.txt");
 
+    private static final Path CHECKED_MANUALS_TO_KEEP = Paths.get("src\\PdfManualProcessor\\res\\checkedManualsToKeep.txt");
+
 
     public static void saveManualsToFile(List<Manual> manuals, Path filePath) {
         StringWriter stringWriter = new StringWriter();
@@ -69,18 +71,27 @@ public class ManualSerializer {
     public static void saveOpenedManualsToFile(List<Manual> manuals){
         saveManualsToFile(manuals,OPENED_MANUALS);
     }
+    public static void saveKeepManualsToFile(List<Manual> manuals){
+        saveManualsToFile(manuals,CHECKED_MANUALS_TO_KEEP);
+    }
+
     public static void refreshRawManualFile(List<Manual> manuals){
         try( PrintWriter pw = new PrintWriter(RAW_DATA_FILE.toFile())) {
         } catch (FileNotFoundException ignored) {
         }
         saveManualsToFile(manuals,RAW_DATA_FILE);
     }
+
     public static List<Manual> getManualsForFiltration(){
         List<Manual>result =getManualsFromFile(RAW_DATA_FILE);
         result.removeAll(getManualsFromFile(NOT_OPEN));
         result.removeAll(getManualsFromFile(SURE_DELETE_MANUALS));
         result.removeAll(getManualsFromFile(CHECK_DELETE_MANUALS));
 
+        return result;
+    }
+    public static List<Manual> getManualsForSureDeleteCheck(){
+        List<Manual>result =getManualsFromFile(SURE_DELETE_MANUALS);
         return result;
     }
     public static List<Manual> getManualsForDownload(){
@@ -104,6 +115,25 @@ public class ManualSerializer {
         Collections.reverse(result);
         return result;
     }
+    public static List<Manual> getKeepManuals(){
+        return getManualsFromFile(CHECKED_MANUALS_TO_KEEP);
+    }
+
+    public static List<Manual> getManualById(String[] manualsIds){
+        List<Manual> manuals = getAllManualsFromFile();
+        List<Manual> result = new ArrayList<>();
+        for (String id : manualsIds){
+            for (Manual m : manuals ){
+                if (id.equals(m.getId())){
+                    result.add(m);
+                    break;
+                }
+            }
+        }
+
+        return result;
+    }
+
     public static Path getRawDataFile() {
         return RAW_DATA_FILE;
     }

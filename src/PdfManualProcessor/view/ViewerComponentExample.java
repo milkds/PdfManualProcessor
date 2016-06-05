@@ -14,20 +14,22 @@ public class ViewerComponentExample {
         String filePath = "D:\\test.pdf";
         SwingController controller = new SwingController();
         SwingViewBuilder factory = new SwingViewBuilder(controller);
-        controller.setIsEmbeddedComponent(true);
-        JButton button = new JButton("press me");
+       // controller.setIsEmbeddedComponent(true);
+
 
         DocumentViewController viewController = controller.getDocumentViewController();
+
         JPanel viewerComponentPanel = factory.buildViewerPanel();
         ComponentKeyBinding.install(controller, viewerComponentPanel);
-        controller.getDocumentViewController().setAnnotationCallback( new org.icepdf.ri.common.MyAnnotationCallback( controller.getDocumentViewController()));
+      //  viewController.setAnnotationCallback( new org.icepdf.ri.common.MyAnnotationCallback( viewController));
+
         JFrame applicationFrame = new JFrame();
         applicationFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         applicationFrame.getContentPane().setLayout(new BorderLayout());
         applicationFrame.getContentPane().add(viewerComponentPanel, BorderLayout.CENTER);
         applicationFrame.getContentPane().add(factory.buildCompleteMenuBar(), BorderLayout.NORTH);
-        applicationFrame.getContentPane().add(button, BorderLayout.WEST);
         controller.setPageViewMode( DocumentViewControllerImpl.ONE_PAGE_VIEW, false);
+
         controller.openDocument(filePath);
 
         applicationFrame.pack();
