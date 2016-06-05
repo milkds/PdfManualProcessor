@@ -1,7 +1,5 @@
 package PdfManualProcessor.view;
 
-import PdfManualProcessor.Manual;
-import PdfManualProcessor.service.ManualSerializer;
 import PdfManualProcessor.view.strategy.Strategy;
 import PdfManualProcessor.view.strategy.SureDeleteStrategy;
 import org.icepdf.ri.common.ComponentKeyBinding;
@@ -17,11 +15,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.util.List;
 
 public class ManualCheckView extends JFrame implements View {
 
-    private JButton moveManual;
+    private JButton moveManual, delete;
     private JPanel left,right,buttons;
     private JList manualList;
     private JScrollPane scroll;
@@ -44,17 +41,27 @@ public class ManualCheckView extends JFrame implements View {
         moveManual.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                strategy.onRemove((String) manualList.getSelectedValue());
                 int index = manualList.getSelectedIndex();
                 if (index>0)manualList.setSelectedIndex(index-1);
                 else manualList.setSelectedIndex(0);
+
                 ((DefaultListModel) manualList.getModel()).remove(index);
 
                 manualList.revalidate();
             }
         });
+        delete = new JButton("delete manuals");
+        delete.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                strategy.onRemoveAll();
+            }
+        });
 
 
         buttons.add(moveManual);
+        buttons.add(delete);
         manualList.setSelectedIndex(0);
         right= initManualViewPanel("D:\\test\\"+manualList.getSelectedValue()+".pdf");
         manualList.addListSelectionListener(new ListSelectionListener() {
@@ -77,12 +84,12 @@ public class ManualCheckView extends JFrame implements View {
 
             @Override
             public void keyPressed(KeyEvent e) {
-
+                //do nothing
             }
 
             @Override
             public void keyReleased(KeyEvent e) {
-
+                //do nothing
             }
         });
 
@@ -106,16 +113,11 @@ public class ManualCheckView extends JFrame implements View {
     }
 
     private void initScroll(){
-        List<Manual> manuals = ManualSerializer.getManualsForReopening(); //for tests. List will be changed later on
+        String[] manuals = strategy.getManualList();
         DefaultListModel<String> model = new DefaultListModel();
-        for (Manual m: manuals){
-            model.addElement(m.getId());
+        for (String m: manuals){
+            model.addElement(m);
         }
-
-        /*String[]manualList2 = new String[manuals.size()];
-        for (int i = 0; i <manuals.size() ; i++) {
-            manualList2[i]=manuals.get(i).getId();
-        }*/
         manualList = new JList(model);
         scroll = new JScrollPane(manualList);
     }
