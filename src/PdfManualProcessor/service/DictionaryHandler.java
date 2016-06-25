@@ -1,6 +1,11 @@
 package PdfManualProcessor.service;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -9,26 +14,36 @@ import java.util.List;
 
 public class DictionaryHandler {
     
-    private static final Path sureDeleteByUrl = null;
-    private static final Path checkDeleteByUrl = null;
-    private static final Path sureDeleteByBody = null;
-    private static final Path checkDeleteByBody = null;
+    private static final Path SURE_DELETE_BY_URL = Paths.get("src\\PdfManualProcessor\\res\\sureDeleteUrlDict.txt");
+    private static final Path CHECK_DELETE_BY_URL = Paths.get("src\\PdfManualProcessor\\res\\checkDeleteUrlDict.txt");
+    private static final Path SURE_DELETE_BY_BODY = Paths.get("src\\PdfManualProcessor\\res\\sureDeleteBodyDict.txt");
+    private static final Path CHECK_DELETE_BY_BODY = Paths.get("src\\PdfManualProcessor\\res\\checkDeleteBodyDict.txt");
     
     private static List<String> getDictionary(Path dictionaryFilePath){
-        return null;
+        List<String> result = new ArrayList<>();
+        try(BufferedReader fileReader = new BufferedReader(new FileReader(dictionaryFilePath.toAbsolutePath().toFile())) ){
+            while (fileReader.ready()){
+                String line = fileReader.readLine();
+                result.add(line);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return result;
+
     }
     
     public static List<String>getSureDeleteByUrlDictionary(){
-        return getDictionary(sureDeleteByUrl);
+        return getDictionary(SURE_DELETE_BY_URL);
     }
     public static List<String>getCheckDeleteByUrlDictionary(){
-        return getDictionary(checkDeleteByUrl);
+        return getDictionary(CHECK_DELETE_BY_URL);
     }
     public static List<String>getSureDeleteByBodyDictionary(){
-        return getDictionary(sureDeleteByBody);
+        return getDictionary(SURE_DELETE_BY_BODY);
     }
     public static List<String>getCheckDeleteByBodyDictionary(){
-        return getDictionary(checkDeleteByBody);
+        return getDictionary(CHECK_DELETE_BY_BODY);
     }
     
     

@@ -7,22 +7,33 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
-import java.io.File;
-import java.io.FileNotFoundException;
+import javax.swing.*;
+import javax.swing.border.Border;
+import java.awt.*;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 public class classForTesting {
     static final String URL = "http://74.117.180.69:83/work/pdfapprove/index.php";
 
-    public static void main(String[] args)
-    {
-        File f = new File("C:\\Users\\AUSU\\IdeaProjects\\ideaGitLearning\\src\\PdfManualProcessor\\res\\downloadedManuals.txt");
-        try( PrintWriter pw = new PrintWriter(f)) {
-        } catch (FileNotFoundException ignored) {
+    public static void main(String args[]) throws InterruptedException {
+        JFrame f = new JFrame("JProgressBar Sample");
+        f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        Container content = f.getContentPane();
+        JProgressBar progressBar = new JProgressBar();
+        progressBar.setValue(0);
+        progressBar.setStringPainted(true);
+        Border border = BorderFactory.createTitledBorder("Reading...");
+        progressBar.setBorder(border);
+        content.add(progressBar, BorderLayout.NORTH);
+        f.setSize(300, 100);
+        f.setVisible(true);
+        for (int i = 1; i <=100; i++) {
+            TimeUnit.MILLISECONDS.sleep(50);
+            progressBar.setValue(i);
         }
     }
 
@@ -56,6 +67,8 @@ public class classForTesting {
         System.out.println(list1);
         System.out.println(list2);
     }
+
+
 
 
 }

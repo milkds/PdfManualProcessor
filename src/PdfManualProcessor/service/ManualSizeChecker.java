@@ -35,7 +35,6 @@ public class ManualSizeChecker {
             ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
             ftpClient.sendCommand("SIZE", url.getPath());
             if(ftpClient.getReplyCode()==213) {
-               /* System.out.println(urlString);*/
                 String reply = ftpClient.getReplyString();
                 result = Integer.parseInt(reply.substring(reply.lastIndexOf(" ")).trim());
             }
@@ -47,7 +46,7 @@ public class ManualSizeChecker {
     private static int getSizeByHttp(String urlString){
         return getSizeByHttp(getHttpResponse(urlString));
     }
-  private static int getSizeByHttp(HttpResponse response){
+    private static int getSizeByHttp(HttpResponse response){
         int result =0;
         if (response==null)return result;
         Header header = response.getFirstHeader("Content-Length");
@@ -57,6 +56,7 @@ public class ManualSizeChecker {
         return result;
     }
     private static HttpResponse getHttpResponse(String urlString){
+        System.out.println("get response method");
         final CloseableHttpClient httpclient = HttpClients.createDefault();
         HttpResponse response;
         final String checkedUrl = getUrlForHttp(urlString);
@@ -75,6 +75,7 @@ public class ManualSizeChecker {
                     return response;
                 }
             });
+
         }
         catch (Exception e) {
            response = getHttpResponseByProxy(checkedUrl);
@@ -101,9 +102,11 @@ public class ManualSizeChecker {
         urlString = urlString.replaceAll("%2B","+");
         return new URL(urlString);
     }
-    private static String getUrlForHttp(String urlString)  {
+    static String getUrlForHttp(String urlString)  {
         urlString = urlString.replaceAll("\\{","%7B");
         urlString = urlString.replaceAll("\\}","%7D");
+        urlString = urlString.replaceAll("\\[","%5B");
+        urlString = urlString.replaceAll("\\]","%5D");
         urlString=urlString.replaceAll("\\\\","/");
         return urlString;
     }

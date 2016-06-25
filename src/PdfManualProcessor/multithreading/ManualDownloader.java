@@ -42,10 +42,6 @@ public class ManualDownloader implements Runnable {
 
 
     public static void main(String[] args) {
-
-
-
-
        downloadManual(new Manual("ftp","ftp://b5dpua.ftp.ukraine.com.ua/search.tpl"));
       //  downloadManual(new Manual("http","http://commons.apache.org/proper/commons-net/images/commons-logo.png"));
     }

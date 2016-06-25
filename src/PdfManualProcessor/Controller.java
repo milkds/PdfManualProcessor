@@ -1,7 +1,6 @@
 package PdfManualProcessor;
 
-import PdfManualProcessor.view.Console;
-import PdfManualProcessor.view.MainView;
+import PdfManualProcessor.view.LongActionProgressBar;
 import PdfManualProcessor.view.ViewHandler;
 
 public class Controller {
@@ -12,8 +11,6 @@ public class Controller {
         Model model = new Model(controller);
         controller.setModel(model);
         ViewHandler viewHandler = new ViewHandler(controller);
-        Console console = new Console();
-        new MainView(console, viewHandler);
     }
 
     public void onRefreshManualList() {
@@ -30,5 +27,17 @@ public class Controller {
 
     public void onOpenPrevManualsInBrowser(int i) {
         model.openPrevManualsInBrowser(i);
+    }
+
+    public void onCancelLongAction() {
+        model.cancelLongAction();
+    }
+
+    public void onDownloadManuals(LongActionProgressBar progressBar) {
+        model.downloadManuals(progressBar);
+    }
+
+    public void onFilterManuals(LongActionProgressBar progressBar) {
+        model.filterManuals(progressBar);
     }
 }

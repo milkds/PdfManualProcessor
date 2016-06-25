@@ -6,7 +6,6 @@ import com.itextpdf.text.pdf.parser.PdfTextExtractor;
 import com.itextpdf.text.pdf.parser.SimpleTextExtractionStrategy;
 import com.itextpdf.text.pdf.parser.TextExtractionStrategy;
 
-import java.io.IOException;
 import java.io.StringWriter;
 
 public class ManualReader {
@@ -17,7 +16,7 @@ public class ManualReader {
      * Method from old project. To be updated.
      * FileStorageAddress Should be stated in Properties. Temporary we will use String variable.
      */
-    public static String readStartingPages(Manual manual, int pagesQuantity) {
+    private static String readStartingPages(Manual manual, int pagesQuantity) {
         String text;
         StringWriter fileBody = new StringWriter();
         try {
@@ -38,6 +37,10 @@ public class ManualReader {
 
         return fileBody.toString();
     }
+    public static String readStartingPages(Manual manual){
+        return readStartingPages(manual,NUMBER_OF_PAGES_TO_READ);
+    }
+
 
     //todo: rework catch section from readStartingPages
 

@@ -68,7 +68,7 @@ public class LoginHandler {
     public static void removeManualInConsole(Manual manual){
         CookieStore cookieStore=null;
         try {
-            cookieStore = getCookies("login","password");
+            cookieStore = getCookies("LOGIN","PASSWORD");
         } catch (IOException e) {
             e.printStackTrace();
         }

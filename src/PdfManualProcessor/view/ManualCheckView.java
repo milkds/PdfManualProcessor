@@ -1,5 +1,7 @@
 package PdfManualProcessor.view;
 
+import PdfManualProcessor.view.strategy.AllDeleteStrategy;
+import PdfManualProcessor.view.strategy.CheckDeleteStrategy;
 import PdfManualProcessor.view.strategy.Strategy;
 import PdfManualProcessor.view.strategy.SureDeleteStrategy;
 import org.icepdf.ri.common.ComponentKeyBinding;
@@ -19,24 +21,24 @@ import java.awt.event.KeyListener;
 public class ManualCheckView extends JFrame implements View {
 
     private JButton moveManual, delete;
-    private JPanel left,right,buttons;
+    private JPanel left,right,buttons,lists;
     private JList manualList;
     private JScrollPane scroll;
+    private JComboBox strategyList;
     private Container contentPane;
 
     private Strategy strategy;
 
-    public ManualCheckView(Strategy strategy) throws HeadlessException {
-        this.strategy = strategy;
+    public ManualCheckView() throws HeadlessException {
+        this.strategy = new AllDeleteStrategy();
         init();
     }
 
     @Override
     public void init() {
         left = new JPanel(new BorderLayout(5,5));
-        initManualViewPanel("D:\\test.pdf");
-        initScroll();
         buttons= new JPanel();
+        lists = new JPanel(new BorderLayout(0,5));
         moveManual = new JButton("move manual");
         moveManual.addActionListener(new ActionListener() {
             @Override
@@ -59,15 +61,92 @@ public class ManualCheckView extends JFrame implements View {
             }
         });
 
-
         buttons.add(moveManual);
         buttons.add(delete);
+        initScroll();
+        lists.add(scroll, BorderLayout.CENTER);
+
+        String [] strategies = {"checkDelete", "sureDelete", "allDelete"};
+        strategyList = new JComboBox(strategies);
+        strategyList.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int index = strategyList.getSelectedIndex();
+                switch (index){
+                    case 0: strategy = new CheckDeleteStrategy(); break;
+                    case 1: strategy = new SureDeleteStrategy(); break;
+                    case 2: strategy = new AllDeleteStrategy(); break;
+                }
+                updateScroll();
+            }
+        });
+        strategyList.setSelectedIndex(0);
+
+        right= initManualViewPanel("D:\\pdf.Storage\\"+manualList.getSelectedValue()+".pdf");
+
+        lists.add(strategyList, BorderLayout.NORTH);
+        lists.add(scroll, BorderLayout.CENTER);
+
+        left.add(buttons,BorderLayout.NORTH);
+        left.add(lists,BorderLayout.CENTER);
+
+        contentPane = getContentPane();
+        contentPane.setLayout(new BorderLayout());
+        contentPane.add(left,BorderLayout.WEST);
+        contentPane.add(right,BorderLayout.EAST);
+
+
+        pack();
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        setVisible(true);
+    }
+
+    public static void main(String[] args) {
+        new ManualCheckView();
+    }
+
+    private void initScroll(){
+        String[] manuals = strategy.getManualList();
+        DefaultListModel<String> model = new DefaultListModel();
+        for (String m: manuals){
+            model.addElement(m);
+        }
+        manualList = new JList(model);
+        scroll = new JScrollPane(manualList);
+    }
+
+    private JPanel initManualViewPanel(String filePath){
+        JPanel result;
+        SwingController controller = new SwingController();
+        SwingViewBuilder factory = new SwingViewBuilder(controller);
+
+        result = factory.buildViewerPanel();
+        ComponentKeyBinding.install(controller, result);
+        controller.setPageViewMode( DocumentViewControllerImpl.ONE_PAGE_VIEW, false);
+        if (manualList.getMaxSelectionIndex()>0) {
+            controller.openDocument(filePath);
+        }
+
+        return result;
+    }
+
+    private void updateView(){
+        contentPane.remove(right);
+
+        right= initManualViewPanel("D:\\pdf.Storage\\"+manualList.getSelectedValue()+".pdf");
+        contentPane.add(right,BorderLayout.EAST);
+        revalidate();
+        repaint();
+    }
+
+    private void updateScroll(){
+        lists.remove(scroll);
+        initScroll();
         manualList.setSelectedIndex(0);
-        right= initManualViewPanel("D:\\test\\"+manualList.getSelectedValue()+".pdf");
         manualList.addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
-               updateView();
+                updateView();
             }
         });
         manualList.addKeyListener(new KeyListener() {
@@ -92,55 +171,8 @@ public class ManualCheckView extends JFrame implements View {
                 //do nothing
             }
         });
+        lists.add(scroll, BorderLayout.CENTER);
 
-
-        left.add(buttons,BorderLayout.NORTH);
-        left.add(scroll,BorderLayout.CENTER);
-
-        contentPane = getContentPane();
-        contentPane.setLayout(new BorderLayout());
-        contentPane.add(left,BorderLayout.WEST);
-        contentPane.add(right,BorderLayout.EAST);
-
-
-        pack();
-        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        setVisible(true);
-    }
-
-    public static void main(String[] args) {
-        new ManualCheckView(new SureDeleteStrategy()).init();
-    }
-
-    private void initScroll(){
-        String[] manuals = strategy.getManualList();
-        DefaultListModel<String> model = new DefaultListModel();
-        for (String m: manuals){
-            model.addElement(m);
-        }
-        manualList = new JList(model);
-        scroll = new JScrollPane(manualList);
-    }
-
-    private JPanel initManualViewPanel(String filePath){
-        JPanel result;
-        SwingController controller = new SwingController();
-        SwingViewBuilder factory = new SwingViewBuilder(controller);
-
-        result = factory.buildViewerPanel();
-        ComponentKeyBinding.install(controller, result);
-        controller.setPageViewMode( DocumentViewControllerImpl.ONE_PAGE_VIEW, false);
-
-        controller.openDocument(filePath);
-
-        return result;
-    }
-
-    private void updateView(){
-        contentPane.remove(right);
-        right= initManualViewPanel("D:\\test\\"+manualList.getSelectedValue()+".pdf");
-        contentPane.add(right,BorderLayout.EAST);
         revalidate();
-        repaint();
     }
 }

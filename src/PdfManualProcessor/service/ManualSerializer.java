@@ -13,14 +13,15 @@ import java.util.List;
  * This class serialize and deserialize manuals.
  */
 public class ManualSerializer {
-    private static final Path RAW_DATA_FILE =Paths.get("src\\PdfManualProcessor\\res\\allManuals.txt");
-    private static final Path DOWNLOADED_MANUAL_FILE =Paths.get("src\\PdfManualProcessor\\res\\downloadedManuals.txt");
-    private static final Path SURE_DELETE_MANUALS =Paths.get("src\\PdfManualProcessor\\res\\sureDelete.txt");
-    private static final Path CHECK_DELETE_MANUALS =Paths.get("src\\PdfManualProcessor\\res\\checkDelete.txt");
-    private static final Path NOT_OPEN =Paths.get("src\\PdfManualProcessor\\res\\notOpen.txt");
-    private static final Path OPENED_MANUALS =Paths.get("src\\PdfManualProcessor\\res\\processedManuals.txt");
+    private static final Path RAW_DATA_FILE =Paths.get("PdfManualProcessor\\res\\allManuals.txt");
+    private static final Path DOWNLOADED_MANUAL_FILE =Paths.get("PdfManualProcessor\\res\\downloadedManuals.txt");
+    private static final Path SURE_DELETE_MANUALS =Paths.get("PdfManualProcessor\\res\\sureDelete.txt");
+    private static final Path CHECK_DELETE_MANUALS =Paths.get("PdfManualProcessor\\res\\checkDelete.txt");
+    private static final Path NOT_OPEN =Paths.get("PdfManualProcessor\\res\\notOpen.txt");
+    private static final Path OPENED_MANUALS =Paths.get("PdfManualProcessor\\res\\processedManuals.txt");
 
-    private static final Path CHECKED_MANUALS_TO_KEEP = Paths.get("src\\PdfManualProcessor\\res\\checkedManualsToKeep.txt");
+    private static final Path DELETE_AFTER_CHECK =Paths.get("PdfManualProcessor\\res\\deleteAfterCheck.txt");
+    private static final Path CHECKED_MANUALS_TO_KEEP = Paths.get("PdfManualProcessor\\res\\checkedManualsToKeep.txt");
 
 
     public static void saveManualsToFile(List<Manual> manuals, Path filePath) {
@@ -58,21 +59,32 @@ public class ManualSerializer {
         return getManualsFromFile(RAW_DATA_FILE);
     }
 
-
     public static void saveRawManualsToFile(List<Manual> manuals) {
         saveManualsToFile(manuals,RAW_DATA_FILE);
     }
     public static void saveSureDeleteManualsToFile(List<Manual> manuals) {
-        saveManualsToFile(manuals,SURE_DELETE_MANUALS);
+        synchronized (SURE_DELETE_MANUALS) {
+            saveManualsToFile(manuals, SURE_DELETE_MANUALS);
+        }
     }
     public static void saveCheckDeleteManualsToFile(List<Manual> manuals) {
-        saveManualsToFile(manuals,CHECK_DELETE_MANUALS);
+        synchronized (CHECK_DELETE_MANUALS) {
+            saveManualsToFile(manuals, CHECK_DELETE_MANUALS);
+        }
     }
     public static void saveOpenedManualsToFile(List<Manual> manuals){
         saveManualsToFile(manuals,OPENED_MANUALS);
     }
     public static void saveKeepManualsToFile(List<Manual> manuals){
         saveManualsToFile(manuals,CHECKED_MANUALS_TO_KEEP);
+    }
+    public static void saveDeleteAfterCheckManualsToFile(List<Manual> manuals){
+        saveManualsToFile(manuals,DELETE_AFTER_CHECK);
+    }
+    public static void saveDownloadedManualsToFile(List<Manual> manuals){
+        synchronized (DOWNLOADED_MANUAL_FILE) {
+            saveManualsToFile(manuals, DOWNLOADED_MANUAL_FILE);
+        }
     }
 
     public static void refreshRawManualFile(List<Manual> manuals){
@@ -87,12 +99,16 @@ public class ManualSerializer {
         result.removeAll(getManualsFromFile(NOT_OPEN));
         result.removeAll(getManualsFromFile(SURE_DELETE_MANUALS));
         result.removeAll(getManualsFromFile(CHECK_DELETE_MANUALS));
+        result.removeAll(getManualsFromFile(OPENED_MANUALS));
+        result.removeAll(getManualsFromFile(DELETE_AFTER_CHECK));
 
         return result;
     }
     public static List<Manual> getManualsForSureDeleteCheck(){
-        List<Manual>result =getManualsFromFile(SURE_DELETE_MANUALS);
-        return result;
+        return getManualsFromFile(SURE_DELETE_MANUALS);
+    }
+    public static List<Manual> getManualsForPossiblyDeleteCheck(){
+        return getManualsFromFile(CHECK_DELETE_MANUALS);
     }
     public static List<Manual> getManualsForDownload(){
         List<Manual> allManuals = getManualsFromFile(RAW_DATA_FILE);
@@ -117,6 +133,9 @@ public class ManualSerializer {
     }
     public static List<Manual> getKeepManuals(){
         return getManualsFromFile(CHECKED_MANUALS_TO_KEEP);
+    }
+    public static List<Manual> getDeleteAfterCheckManuals(){
+        return getManualsFromFile(DELETE_AFTER_CHECK);
     }
 
     public static List<Manual> getManualById(String[] manualsIds){

@@ -6,12 +6,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class MainView extends JFrame implements View {
-    private JButton download, filter, refresh,next, prev;
+    private Console console;
+    private ViewHandler viewHandler;
+
+    private JButton download, filter, refresh, check,next, prev;
     private JScrollPane scroll;
     private JPanel box,openers;
     private JLabel nManuals, pManuals;
-    private Console console;
-    private ViewHandler viewHandler;
     private SpinnerModel nextModel,prevModel;
     private JSpinner nextSpinner,prevSpinner;
 
@@ -28,9 +29,16 @@ public class MainView extends JFrame implements View {
         download.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                viewHandler.fireEventDownloadManuals();
             }
         });
         filter = new JButton("Filter manuals");
+        filter.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                viewHandler.fireEventFilterManuals();
+            }
+        });
         refresh = new JButton("Refresh manual list");
         refresh.addActionListener(new ActionListener() {
             @Override
@@ -44,12 +52,21 @@ public class MainView extends JFrame implements View {
 
             }
         });
+        check = new JButton("Check manuals");
+        check.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                viewHandler.fireEventCheckManuals();
+            }
+        });
+
         initOpeners(); // different abstraction level - rework.
-        box = new JPanel(new GridLayout(4, 1,0,5));
+        box = new JPanel(new GridLayout(5, 1,0,5));
 
         box.add(refresh);
         box.add(download);
         box.add(filter);
+        box.add(check);
         box.add(openers);
 
         JPanel west = new JPanel(new GridBagLayout());

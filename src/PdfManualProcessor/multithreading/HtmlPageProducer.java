@@ -24,7 +24,10 @@ public class HtmlPageProducer implements Runnable{
 
     @Override
     public void run() {
-        String pageBody = LoginHandler.getHtmlPage(cookieStore,pageNo);
+        String pageBody = null;
+        while (pageBody==null||pageBody.length()<1024){
+            pageBody = LoginHandler.getHtmlPage(cookieStore,pageNo);
+        }
         List<Manual> manuals = ManualPageParser.getManuals(pageBody);
         synchronized (tmpManualList){
            tmpManualList.addAll(manuals);

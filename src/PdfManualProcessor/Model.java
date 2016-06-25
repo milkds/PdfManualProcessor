@@ -3,15 +3,24 @@ package PdfManualProcessor;
 import PdfManualProcessor.multithreading.ManualProducingControllerNew;
 import PdfManualProcessor.service.ManualPageOpener;
 import PdfManualProcessor.service.ManualSerializer;
+import PdfManualProcessor.view.LongActionProgressBar;
 
 import java.io.IOException;
 import java.util.List;
 
 public class Model {
     private Controller controller;
+    private CurrentAction currentAction;
+
+    private ManualProducingControllerNew manualProducingControllerNew;
+
+    public void setCurrentAction(CurrentAction currentAction) {
+        this.currentAction = currentAction;
+    }
 
     public Model(Controller controller) {
         this.controller = controller;
+        currentAction=CurrentAction.WAIT;
     }
 
     public void refreshManualList() {
@@ -52,5 +61,31 @@ public class Model {
 
     public static void deleteManualsInConsole(List<Manual> manuals){
         ManualProducingControllerNew.deleteManualsInConsole(manuals);
+    }
+
+    public void cancelLongAction() {
+        System.out.println("cancelled");
+        switch (currentAction){
+            case CHECK:{
+                manualProducingControllerNew.cancelManualFiltration();
+                break;
+            }
+            case DOWNLOAD:{
+                manualProducingControllerNew.cancelDownloadManuals();
+                break;
+            }
+        }
+    }
+
+    public void downloadManuals(LongActionProgressBar progressBar) {
+        setCurrentAction(CurrentAction.DOWNLOAD);
+        manualProducingControllerNew = new ManualProducingControllerNew();
+        manualProducingControllerNew.downloadManuals(progressBar);
+    }
+
+    public void filterManuals(LongActionProgressBar progressBar) {
+        setCurrentAction(CurrentAction.CHECK);
+        manualProducingControllerNew = new ManualProducingControllerNew();
+        manualProducingControllerNew.filterManuals(progressBar);
     }
 }

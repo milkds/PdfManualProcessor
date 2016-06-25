@@ -1,23 +1,27 @@
 package PdfManualProcessor;
 
-import PdfManualProcessor.service.ManualReader;
-import PdfManualProcessor.service.ManualSizeChecker;
-
 public class Manual implements Comparable {
+    public void setSize(int size) {
+        this.size = size;
+    }
+
+    public void setPdfUrl(String pdfUrl) {
+        this.pdfUrl = pdfUrl;
+    }
 
     private String pdfUrl;
     private String id;
     private int size;
 
     public Manual(String id, String pdfUrl) {
-        this.id=id;
+        this.id = id;
         this.pdfUrl = pdfUrl;
-        this.size= ManualSizeChecker.getManualSize(pdfUrl);
+        this.size = 0;
     }
     public Manual(String id, String pdfUrl,int size) {
-        this.id=id;
+        this.id = id;
         this.pdfUrl = pdfUrl;
-        this.size=size;
+        this.size = size;
     }
 
     public String getPdfUrl() {
@@ -26,10 +30,6 @@ public class Manual implements Comparable {
 
     public String getId() {
         return id;
-    }
-
-    public String getBody(int numberOfPages){
-        return ManualReader.readStartingPages(this,numberOfPages);
     }
 
     public int getSize() {
@@ -48,7 +48,7 @@ public class Manual implements Comparable {
         if (!(o instanceof Manual)) return false;
         Manual manual = (Manual) o;
 
-        return getPdfUrl().equals(manual.getPdfUrl()) && getId().equals(manual.getId());
+        return getId().equals(manual.getId());
     }
 
     @Override

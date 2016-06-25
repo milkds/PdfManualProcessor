@@ -1,12 +1,10 @@
 package PdfManualProcessor.service;
 
 import PdfManualProcessor.Manual;
-import org.apache.http.client.CookieStore;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -41,15 +39,6 @@ public class ManualPageParser {
         return Integer.parseInt(total)-Integer.parseInt(done);
     }
 
-    public static void main(String[] args) {
-        try {
-            CookieStore cookieStore = LoginHandler.getCookies("","");
-            String page = LoginHandler.getHtmlPage(cookieStore,1);
-            getManualsQuantity(page);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
     // TODO:  decide and implement methods
 }
