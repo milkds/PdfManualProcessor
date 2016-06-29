@@ -15,9 +15,11 @@ import org.apache.http.impl.client.HttpClients;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.concurrent.Callable;
 
-public class ManualSizeChecker {
+public class ManualSizeChecker implements Callable<Integer>{
     private static final String PROXY_URL = "http://74.117.180.69:83/work/pdfapprove/get_pdf_curl.php?url=";
+
 
     public static int getManualSize(String urlString){
         if (urlString.toLowerCase().startsWith("ftp"))return getSizeByFtp(urlString);
@@ -56,7 +58,6 @@ public class ManualSizeChecker {
         return result;
     }
     private static HttpResponse getHttpResponse(String urlString){
-        System.out.println("get response method");
         final CloseableHttpClient httpclient = HttpClients.createDefault();
         HttpResponse response;
         final String checkedUrl = getUrlForHttp(urlString);
@@ -109,6 +110,11 @@ public class ManualSizeChecker {
         urlString = urlString.replaceAll("\\]","%5D");
         urlString=urlString.replaceAll("\\\\","/");
         return urlString;
+    }
+
+    @Override
+    public Integer call() throws Exception {
+        return null;
     }
 
 

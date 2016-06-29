@@ -1,6 +1,6 @@
 package PdfManualProcessor;
 
-import PdfManualProcessor.multithreading.ManualProducingControllerNew;
+import PdfManualProcessor.multithreading.ManualProducingController;
 import PdfManualProcessor.service.ManualPageOpener;
 import PdfManualProcessor.service.ManualSerializer;
 import PdfManualProcessor.view.LongActionProgressBar;
@@ -12,7 +12,7 @@ public class Model {
     private Controller controller;
     private CurrentAction currentAction;
 
-    private ManualProducingControllerNew manualProducingControllerNew;
+    private ManualProducingController manualProducingController;
 
     public void setCurrentAction(CurrentAction currentAction) {
         this.currentAction = currentAction;
@@ -25,7 +25,7 @@ public class Model {
 
     public void refreshManualList() {
         try {
-            ManualProducingControllerNew.refreshManualList();
+            ManualProducingController.refreshManualList();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -60,18 +60,18 @@ public class Model {
     }
 
     public static void deleteManualsInConsole(List<Manual> manuals){
-        ManualProducingControllerNew.deleteManualsInConsole(manuals);
+        ManualProducingController.deleteManualsInConsole(manuals);
     }
 
     public void cancelLongAction() {
         System.out.println("cancelled");
         switch (currentAction){
             case CHECK:{
-                manualProducingControllerNew.cancelManualFiltration();
+                manualProducingController.cancelManualFiltration();
                 break;
             }
             case DOWNLOAD:{
-                manualProducingControllerNew.cancelDownloadManuals();
+                manualProducingController.cancelDownloadManuals();
                 break;
             }
         }
@@ -79,13 +79,13 @@ public class Model {
 
     public void downloadManuals(LongActionProgressBar progressBar) {
         setCurrentAction(CurrentAction.DOWNLOAD);
-        manualProducingControllerNew = new ManualProducingControllerNew();
-        manualProducingControllerNew.downloadManuals(progressBar);
+        manualProducingController = new ManualProducingController();
+        manualProducingController.downloadManuals(progressBar);
     }
 
     public void filterManuals(LongActionProgressBar progressBar) {
         setCurrentAction(CurrentAction.CHECK);
-        manualProducingControllerNew = new ManualProducingControllerNew();
-        manualProducingControllerNew.filterManuals(progressBar);
+        manualProducingController = new ManualProducingController();
+        manualProducingController.filterManuals(progressBar);
     }
 }

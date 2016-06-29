@@ -40,4 +40,6 @@ public class Controller {
     public void onFilterManuals(LongActionProgressBar progressBar) {
         model.filterManuals(progressBar);
     }
+
+    //todo: check serializing after stops
 }

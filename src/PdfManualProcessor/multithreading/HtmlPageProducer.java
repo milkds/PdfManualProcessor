@@ -9,7 +9,7 @@ import java.util.List;
 
 public class HtmlPageProducer implements Runnable{
     /**
-     * This class gets HTML pages with up to 10 manual links on it.
+     * This class transforms HTML pages with up to 10 manual links on it to list of Manuals.
      */
 
     private final List<Manual> tmpManualList;
@@ -24,14 +24,20 @@ public class HtmlPageProducer implements Runnable{
 
     @Override
     public void run() {
-        String pageBody = null;
-        while (pageBody==null||pageBody.length()<1024){
+        //Initialising String variable, for keeping body of Html page.
+        String pageBody = "";
+
+        //getting page body. Retrying till we get valid body.
+        while (pageBody.length()<1024){
             pageBody = LoginHandler.getHtmlPage(cookieStore,pageNo);
         }
+
+        //parsing page body on up to 10 Manual objects with 0 size.
         List<Manual> manuals = ManualPageParser.getManuals(pageBody);
+
+        //writing Manuals to common List<Manual>.
         synchronized (tmpManualList){
            tmpManualList.addAll(manuals);
         }
-        System.out.println(pageNo + "page is processed.");
     }
 }

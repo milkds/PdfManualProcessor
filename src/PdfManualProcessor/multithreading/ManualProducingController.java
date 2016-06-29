@@ -2,101 +2,137 @@ package PdfManualProcessor.multithreading;
 
 import PdfManualProcessor.Manual;
 import PdfManualProcessor.service.LoginHandler;
+import PdfManualProcessor.service.ManualPageParser;
 import PdfManualProcessor.service.ManualSerializer;
+import PdfManualProcessor.view.LongActionProgressBar;
 import org.apache.http.client.CookieStore;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
+/**
+ * This class manages all multithreading functions (downloading, filtration, etc.)
+ */
 public class ManualProducingController {
-    /*static final String TOXIC_WORD = "toxic";
-    static final List<Manual> TOXIC_LIST = new ArrayList<>();
-    static final Manual TOXIC_MANUAL = new Manual("","",0);
+    private DownloadController downloadController;
+    private ManualFilteringController filterController;
 
-    private final BlockingQueue<String> htmlPageQueue= new LinkedBlockingQueue();
-    private final BlockingQueue<List<Manual>>  manualWritingQueue= new LinkedBlockingQueue();
-    private final BlockingQueue<List<Manual>> downloadedManualWritingQueue= new LinkedBlockingQueue();
-    private final BlockingQueue<Manual> downloadingQueue;
+    /**
+     * Refreshes list of all manuals.
+     * @throws IOException
+     */
+    public static void refreshManualList() throws IOException {
+        //Making container for all manuals in system.
+        List<Manual> temp = new ArrayList<>();
 
-    public static void main(String[] args) throws InterruptedException {
-        try {
-            CookieStore cookieStore = LoginHandler.getCookies("login","password");
-            new ManualProducingController().getManuals(80,90,cookieStore);
-        } catch (IOException e) {
-            e.printStackTrace();
+        //Getting cookieStore to avoid further cookie requests.
+        CookieStore cookieStore = LoginHandler.getCookies("LOGIN","PASSWORD");
+
+        //Total quantity of manuals in system (parsing from start page).
+        int totalManuals = ManualPageParser.getManualsQuantity(LoginHandler.getHtmlPage(cookieStore,1));
+
+        //Total full html pages in system (each page contains 10 manuals)
+        int totalPages = totalManuals/10;
+
+        //Total html pages in system (if last contains less then 10 manuals)
+        if (totalManuals%10>0)totalPages++;
+
+        //Creating and starting tasks to get html pages body. If start all them at once - server will fail to response in 30% times.
+        ExecutorService service = Executors.newFixedThreadPool(10);
+        for (int i = 1; i <=totalPages ; i++) {
+            service.submit(new HtmlPageProducer(temp,cookieStore,i));
         }
 
+        //Checking until we get all manuals.
+        while (temp.size()<totalManuals){
+            try {
+                TimeUnit.SECONDS.sleep(5);
+            } catch (InterruptedException ignored) {
+            }
+        }
+
+        //Getting list of previously got manuals.
+        List<Manual> allManuals = ManualSerializer.getAllManualsFromFile();
+
+        //Sorting list of manuals by domain of their URLs.
+        Collections.sort(temp);
+
+        //Serialising our list of manuals.
+        ManualSerializer.refreshRawManualFile(temp);
+        System.out.println("all Manuals are up-to-date");
     }
 
-    public ManualProducingController() throws InterruptedException {
-        downloadingQueue = initDownloadingQueue();
+    /**
+     * Deletes manuals in system.
+     * @param manuals - list of manuals for delete.
+     */
+    public static void deleteManualsInConsole(List<Manual> manuals) {
+        //for each manual we start new thread, which sends delete request to server.
+        for (final Manual m : manuals){
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    LoginHandler.removeManualInConsole(m);
+                }
+            }).start();
+        }
     }
 
-    public void getManuals(int startPage, int finishPage, CookieStore cookieStore) throws InterruptedException {
-     //  BlockingQueue<String> htmlPageQueue = new LinkedBlockingQueue();
-       *//* BlockingQueue<List<Manual>> manualWritingQueue = new LinkedBlockingQueue();
-        BlockingQueue<List<Manual>> downloadedManualWritingQueue = new LinkedBlockingQueue();
-        BlockingQueue<Manual> downloadingQueue = initDownloadingQueue();*//*
-        ExecutorService service = Executors.newCachedThreadPool();
-        List<Future>producerFutures = new ArrayList<>();
-        List<Future>processorFutures= new ArrayList<>();
-        List<Future>downloadingFutures= new ArrayList<>();
-        for (int i = startPage; i <finishPage ; i++) {
-            Future<String>ft = service.submit(new HtmlPageProducer(htmlPageQueue,cookieStore,i) {
-            });
-            producerFutures.add(ft);
-        }
-        for (int i = 0; i <10 ; i++) {
-            Future<String>ft = service.submit(new HtmlPageProcessor(htmlPageQueue,manualWritingQueue, downloadingQueue) {
-            });
-            processorFutures.add(ft);
-        }
-        for (int i = 0; i <10 ; i++) {
-            Future<String>ft = service.submit(new ManualDownloader(downloadingQueue, manualWritingQueue) {
-            });
-            downloadingFutures.add(ft);
-        }
-       startWriters();
-     //   new Thread(new ManualToFileWriter(manualWritingQueue)).start();
-        while (isRunning(producerFutures)){
-                TimeUnit.SECONDS.sleep(1);
-        }
-        System.out.println("writer started");
-        htmlPageQueue.put(TOXIC_WORD);
-        while (isRunning(processorFutures)){
-                TimeUnit.SECONDS.sleep(1);
-        }
-        manualWritingQueue.put(TOXIC_LIST);
-        downloadingQueue.put(TOXIC_MANUAL);
-        while (isRunning(downloadingFutures)){
-            System.out.println("downloaders running");
-            TimeUnit.SECONDS.sleep(15);
-        }
-        downloadedManualWritingQueue.put(TOXIC_LIST);
-        service.shutdown();
+    /**
+     * Calls manual downloading start and also starts progress bar thread.
+     * @param progressBar - progress bar for LongActionView class.
+     */
+    public void downloadManuals(LongActionProgressBar progressBar){
+        //initialising downloadController.
+        downloadController = new DownloadController();
+
+        //starting download.
+        downloadController.downloadManuals();
+
+        //initialising and starting progress bar.
+        progressBar.setCounter(downloadController.getCounter());
+        progressBar.setTotal(downloadController.getTotal());
+        new Thread(progressBar).start();
     }
 
-
-    public static boolean isRunning(List<Future> list){
-        for (Future future : list){
-            if (!future.isDone())return true;
-        }
-        return false;
+    /**
+     * Cancels manual downloading.
+     */
+    public void cancelDownloadManuals(){
+        downloadController.cancelDownload();
     }
-    public static BlockingQueue<Manual> initDownloadingQueue() throws InterruptedException {
-        LinkedBlockingQueue result = new LinkedBlockingQueue();
-        List<Manual> manuals = ManualSerializer.getManualsForDownload();
-        for (Manual m : manuals){
-            result.put(m);
-        }
 
-        return result;
+    /**
+     * Cancels manual filtration.
+     */
+    public void cancelManualFiltration(){
+        filterController.cancelFiltration();
     }
-    public void startWriters(){
-        new Thread(new ManualToFileWriter(manualWritingQueue, ManualSerializer.getRawDataFile())).start();
-        new Thread(new ManualToFileWriter(downloadedManualWritingQueue, ManualSerializer.getDownloadedManualFile())).start();}*/
 
+    /**
+     * Calls manual filtration start and also starts progress bar thread.
+     * @param progressBar - progress bar for LongActionView class.
+     */
+    public void filterManuals(LongActionProgressBar progressBar) {
+        //initialising filtration controller.
+        filterController = new ManualFilteringController();
 
+        //filtering by Url.
+        filterController.filterManualsByUrl();
+
+        //filtering by manual file body.
+        filterController.filterManualsByBody();
+
+        //initialising and starting progress bar for filtration by body (filtration by url is not a long action).
+        progressBar.setCounter(filterController.getCounter());
+        progressBar.setTotal(filterController.getTotal());
+        new Thread(progressBar).start();
+    }
+
+    //// TODO: 29.06.2016 refactor deleteManualsInConsole() method to make it use ExecutorService. Name this class properly.
 }

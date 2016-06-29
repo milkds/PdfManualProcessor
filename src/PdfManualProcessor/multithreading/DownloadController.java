@@ -23,10 +23,13 @@ public class DownloadController {
     public void downloadManuals(){
         //getting list of manuals to download.
         List<Manual> manuals = ManualSerializer.getManualsForDownload();
+
         //initialising total count of manuals to download (needed for user notification).
         total = manuals.size();
+
         //initialising counter of downloaded manuals. (needed for user notification).
         counter = new AtomicInteger(0);
+
         //filling downloadingQueue with manuals to download
         for (Manual m : manuals){
             try {
@@ -34,9 +37,10 @@ public class DownloadController {
             } catch (InterruptedException ignored) {
             }
         }
+
         //starting threads for downloading manuals. 10 seems to be optimal number, as download performed from different servers.
         for (int i = 0; i <10; i++) {
-            new Thread(new ManualDownloaderNew(downloadingQueue,counter, total)).start();
+            new Thread(new ManualDownloader(downloadingQueue,counter, total)).start();
         }
     }
     /**
@@ -46,14 +50,12 @@ public class DownloadController {
     public void cancelDownload(){
         downloadingQueue.clear();
     }
-
     /**
      * @return Counter of downloaded manuals (for user notification).
      */
     public AtomicInteger getCounter() {
         return counter;
     }
-
     /**
      * @return Total count of manuals to download (for user notification).
      */

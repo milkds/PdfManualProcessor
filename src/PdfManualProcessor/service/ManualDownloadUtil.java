@@ -1,6 +1,7 @@
 package PdfManualProcessor.service;
 
 import PdfManualProcessor.Manual;
+import PdfManualProcessor.multithreading.ManualSizeGetter;
 import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.parser.PdfTextExtractor;
 import org.apache.http.HttpEntity;
@@ -19,17 +20,18 @@ import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Files;
+import java.util.concurrent.*;
 
 public class ManualDownloadUtil {
     private static final String PROXY_URL = "http://74.117.180.69:83/work/pdfapprove/get_pdf_curl.php?url=";
     private static final String DOWNLOAD_DIR = "D:\\pdf.Storage\\";  //change it to directory from properties
 
     public static void download(Manual m){
-        m.setSize(ManualSizeChecker.getManualSize(m.getPdfUrl()));
+        m.setSize(getManualSize(m));
         if (m.getPdfUrl().toLowerCase().startsWith("ftp")){
-            downloadHttpManual(m);
+            downloadFtpManual(m);
         }
-       // else downloadHttpManual(m);
+        else downloadHttpManual(m);
     }
 
     private static void downloadFtpManual(Manual m){
@@ -121,6 +123,20 @@ public class ManualDownloadUtil {
             return true;
         }
         return false;
+    }
+
+    private static Integer getManualSize(Manual m){
+        Integer result = 0;
+        ExecutorService es = Executors.newCachedThreadPool();
+        Future<Integer> future = es.submit(new ManualSizeGetter(m.getPdfUrl()));
+        es.shutdown();
+        try {
+            result=future.get(3,TimeUnit.SECONDS);
+        } catch (Exception e) {
+            result=0;
+        }
+
+        return result;
     }
 
 

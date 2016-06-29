@@ -1,100 +1,72 @@
 package PdfManualProcessor.multithreading;
 
 import PdfManualProcessor.Manual;
-import PdfManualProcessor.multithreading.dimaDownloadManager.Download;
+import PdfManualProcessor.service.ManualDownloadUtil;
+import PdfManualProcessor.service.ManualSerializer;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Collections;
-import java.util.List;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * This class downloads Manuals to Disk.
- *
- * Main idea of class is next:
- *
- * Ask for file size (add new field to manual class)
- * try to download Manual from proxy.
- * check downloaded file size. If it is not equal to file size - try to get it by direct link.
- *
- * If file size is not reachable - check file consistency via PDFReader.
- *
- * we have 3 types of urls - ftp, http and https
- *
- * http and https we do the same - parse host from urlString. Send head request to it - get Content-Length field. //this is not actual - use httpClient
- *
- * For ftp we use algorithm from sampleFTPMethod
- *
- *
- *
+ * This class is a task in constant loop, which takes manual from queue and downloads it.
  */
 public class ManualDownloader implements Runnable {
+
     private BlockingQueue<Manual> downloadingQueue;
-    private final BlockingQueue<List<Manual>> manualWritingQueue;
+    private static final String NOTIFY_FORMAT = "downloaded %d manuals of total %d in %d ms. %s - %s";
+    private final AtomicInteger counter;
+    private  Integer total;
 
-
-
-    public ManualDownloader(BlockingQueue<Manual> downloadingQueue, BlockingQueue<List<Manual>> manualWritingQueue) {
+    public ManualDownloader(BlockingQueue<Manual> downloadingQueue, AtomicInteger counter, Integer total) {
         this.downloadingQueue = downloadingQueue;
-        this.manualWritingQueue = manualWritingQueue;
+        this.counter = counter;
+        this.total = total;
     }
-
-
-    public static void main(String[] args) {
-       downloadManual(new Manual("ftp","ftp://b5dpua.ftp.ukraine.com.ua/search.tpl"));
-      //  downloadManual(new Manual("http","http://commons.apache.org/proper/commons-net/images/commons-logo.png"));
-    }
-
-    public static void downloadManual(Manual m){
-
-        //System.out.println(m.getPdfUrl());
-
-        URL url = null;
-        try {
-           url = new URL(m.getPdfUrl());
-
-        } catch (MalformedURLException e) {System.out.println("не Шмогли конвертировать пдфУРЛ в объект УРЛ");}
-
-       System.out.println(url);
-
-        Download download = new Download(url);
-
-      //  System.out.println(download);
-
-       // System.out.println("Manual downloaded: "+m.getPdfUrl());
-    }
-
-
-    /*public String call() throws Exception {
-        while (true){
-            Manual m = downloadingQueue.take();
-            if (m.equals(ManualProducingController.TOXIC_MANUAL)){
-                downloadingQueue.put(m);
-                break;
-            }
-            downloadManual(m);
-            manualWritingQueue.put(Collections.singletonList(m));
-        }
-        return "";
-    }*/
 
     @Override
     public void run() {
-        while (true){
+        while (true) {
             Manual m = null;
+            //getting start time (this needed for user notification).
+            Long start = System.currentTimeMillis();
             try {
+                //getting manual from queue.
                 m = downloadingQueue.take();
-                if (m==null){
+                //if queue is empty, cancels whole task, as by design empty queue means that there is no manuals left to download
+                if (m == null) {
                     downloadingQueue.put(m);
                     break;
                 }
-                downloadManual(m);
-                manualWritingQueue.put(Collections.singletonList(m));
+                //downloading manual.
+                ManualDownloadUtil.download(m);
+                //saving manual to list of downloaded manuals.
+                serializeDownloadedManual(m);
+                //notifying user.
+                notifyUser(m,start,System.currentTimeMillis());
             } catch (InterruptedException e) {
-              break;
+                break;
             }
         }
-
     }
+
+    /**
+     * notifying user with quantity of manuals left to download and time taken for downloading current manual
+     * @param m - current manual.
+     * @param start - time of current manual downloading start.
+     * @param finish - time of current manual downloading finish.
+     */
+    private void notifyUser(Manual m, Long start, Long finish){
+        synchronized(counter) {
+            System.out.println(String.format(NOTIFY_FORMAT, counter.incrementAndGet(), total, (finish - start), m.getPdfUrl(), m.getId()));
+        }
+    }
+    /**
+     * saving manuals to file with list of downloaded manuals.
+     * @param m - downloaded manual to serialize.
+     */
+    private void serializeDownloadedManual(Manual m){
+        ManualSerializer.saveDownloadedManualsToFile(Collections.singletonList(m));
+    }
+
 }
