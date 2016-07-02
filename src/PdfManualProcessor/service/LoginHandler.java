@@ -20,34 +20,72 @@ import java.util.List;
 
 
 /**
- * Class for Login and Obtaining raw files data.
+ * This class manages networking between client and system.
  */
 public class LoginHandler {
     private static final String MANUALS_PAGE_URL = "http://74.117.180.69:83/work/pdfapprove/index.php?page=";
     private static final String LOGIN_PAGE_URL = "http://74.117.180.69:83/work/pdfapprove/index.php?action=login";
     private static final String CHANGE_STATE_URL = "http://74.117.180.69:83/work/pdfapprove/model/set_state.php";
 
+    /**
+     * Gets cookies for further requests to system.
+     *
+     * @param login - user Login.
+     * @param password - user Password.
+     * @return CookieStore
+     * @throws IOException
+     */
     public static CookieStore getCookies(String login, String password) throws IOException {
+        //Creating new httpClient and context.
         CloseableHttpClient httpclient = HttpClients.createDefault();
         HttpClientContext context = HttpClientContext.create();
+
+        //Creating HttpPost request.
         HttpPost httpPost = new HttpPost(LOGIN_PAGE_URL);
+
+        //Adding necessary parameters to HttpPost request.
         List<NameValuePair> urlParameters = new ArrayList<>();
         urlParameters.add(new BasicNameValuePair("auth", "1"));
         urlParameters.add(new BasicNameValuePair("login", login));
         urlParameters.add(new BasicNameValuePair("password", password));
         httpPost.setEntity(new UrlEncodedFormEntity(urlParameters));
+
+        //Sending request.
         httpclient.execute(httpPost,context);
+
+        //Getting cookies.
         CookieStore cookieStore = context.getCookieStore();
+
+        //Closing httpClient.
         httpclient.close();
+
         return cookieStore;
     }
-    public static String getHtmlPage(CookieStore cookieStore,int pageNo) /*throws IOException*/ {
+
+    /**
+     * Gets html page body for parsing on manual objects.
+     * @param cookieStore - cookies, necessary to get requested page.
+     * @param pageNo - page number in system.
+     * @return html page body in String variable.
+     */
+    public static String getHtmlPage(CookieStore cookieStore,int pageNo) {
+        //Creating new httpClient and context.
         CloseableHttpClient httpclient = HttpClients.createDefault();
         HttpClientContext context = HttpClientContext.create();
+
+        //Adding cookies to context.
         context.setCookieStore(cookieStore);
+
+        //Getting url for httpGet request.
         String url = MANUALS_PAGE_URL+pageNo;
+
+        //Building httpGet request
         HttpGet httpGet = new HttpGet(url);
+
+        //Getting storage for html page body.
         StringBuilder result = new StringBuilder();
+
+        //Executing httpGet request. Writing html page body to StringBuilder.
         HttpResponse httpResponse = null;
         try {
             httpResponse = httpclient.execute(httpGet,context);
@@ -65,23 +103,36 @@ public class LoginHandler {
         return result.toString();
     }
 
+    /**
+     * Send delete request to system for selected manual.
+     * @param manual - manual to delete.
+     */
     public static void removeManualInConsole(Manual manual){
+        //Getting cookies.
         CookieStore cookieStore=null;
         try {
             cookieStore = getCookies("LOGIN","PASSWORD");
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        //Building httpClient and context.
         CloseableHttpClient httpclient = HttpClients.createDefault();
         HttpClientContext context = HttpClientContext.create();
+
+        //Adding cookies to context.
         context.setCookieStore(cookieStore);
+
+        //Building post request.
         HttpPost httpPost = new HttpPost(CHANGE_STATE_URL);
 
+        //Adding necessary parameters to httpPost request
         List<NameValuePair> urlParameters = new ArrayList<NameValuePair>();
         urlParameters.add(new BasicNameValuePair("id", manual.getId()));
         urlParameters.add(new BasicNameValuePair("delete", "delete"));
         urlParameters.add(new BasicNameValuePair("user", "user_fl7")); //need to implement getting value here
 
+        //Executing request, closing httpClient.
         try {
             httpPost.setEntity(new UrlEncodedFormEntity(urlParameters));
             httpclient.execute(httpPost,context);
@@ -92,5 +143,5 @@ public class LoginHandler {
     }
 
 
- //// TODO: 04.04.2016 add JavaDocs. Implement Exception handling. Implement getting value for manual delete method.
+ //// TODO: Implement Exception handling. Implement getting value for manual delete method.
 }

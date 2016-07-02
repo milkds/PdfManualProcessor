@@ -22,86 +22,153 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Files;
 import java.util.concurrent.*;
 
+/**
+ * This class implements all downloading logic.
+ */
 public class ManualDownloadUtil {
     private static final String PROXY_URL = "http://74.117.180.69:83/work/pdfapprove/get_pdf_curl.php?url=";
     private static final String DOWNLOAD_DIR = "D:\\pdf.Storage\\";  //change it to directory from properties
 
+    /**
+     * Gets manuals' size.
+     * Selects which download method (http or ftp) to use, according to manuals' url.
+     * @param m - Manual to download.
+     */
     public static void download(Manual m){
+        //Getting manuals estimated size.
         m.setSize(getManualSize(m));
+
+        //Selecting which method to use.
         if (m.getPdfUrl().toLowerCase().startsWith("ftp")){
             downloadFtpManual(m);
         }
         else downloadHttpManual(m);
     }
 
+    /**
+     * Downloads manual, located on ftp server.
+     * @param m - Manual to download.
+     */
     private static void downloadFtpManual(Manual m){
         System.out.println("ftp skipped. "+m.getPdfUrl());
     }
+
+    /**
+     * Downloads manual, located on http/https server.
+     * @param m - Manual to download.
+     */
     private static void downloadHttpManual(Manual m){
+        //Checking size, if it is not legit - trying to get it again.
         if (m.getSize()<1024) m.setSize(ManualSizeChecker.getManualSize(m.getPdfUrl()));
+
+        //Preparing file, at which we are planning to save manual. (Name is manuals' ID - its always unique.)
         File file = new File(DOWNLOAD_DIR+m.getId()+".pdf");
-        //do it here to make HttpClient close correctly. If we do it in getResponse method we will be not able, to get entity of it
+
+        //Creating httpclient.
         CloseableHttpClient httpclient = HttpClients.createDefault();
        try {
+           //Getting response with manual body. Saving it to file.
            savePdfFile(getResponse(m,httpclient),file);
            httpclient.close();
        }
-       catch (IOException ignored){
-           ignored.printStackTrace();
-       }
+       catch (IOException ignored){}
+
+        //Getting size of downloaded manual.
         long fileSize = file.length();
+
+        //Getting estimated size.
         int size = m.getSize();
-        System.out.println(m.getPdfUrl()+" size is "+fileSize +". Estimated size "+size);
+
+        //Checking manual file - if it is corrupted, starting download by proxy.
         if (isCorrupt(m)){
             System.out.println("starting download via proxy manual - "+m.getId());
-              downloadManualByProxy(m);
+            downloadManualByProxy(m);
         }
-
     }
 
+    /**
+     * Downloading manual via proxy. Also we use downloading logic different from
+     * previous download method. Sometimes httpClient manages exceptions wrong - and
+     * after such cases (not only after such) we call this method.
+     * @param m - Manual to download.
+     */
     private static void downloadManualByProxy(Manual m){
-        //we don't use HttpClient here, to get manual in alternative way.
+        //Preparing file, to which we will save manuals' body.
         File file = new File(DOWNLOAD_DIR+m.getId()+".pdf");
+
         try {
+            //Getting proper URL (changing incorrect symbols to correct)
             URL url = new URL(PROXY_URL+m.getPdfUrl());
+
+            //Opening channel.
             ReadableByteChannel rbc = Channels.newChannel(url.openStream());
+
+            //Opening output stream.
             FileOutputStream fos = new FileOutputStream(file);
+
+            //Transferring manuals' body from web to file.
             fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+
+            //Closing resources.
             fos.close();
             rbc.close();
         }
-        catch (IOException ignored){
-            ignored.printStackTrace();
-        }
+        catch (IOException ignored){}
     }
 
+    /**
+     * Gets httpResponse, which entity should be manuals' body.
+     * @param m - Manual to download.
+     * @param httpclient - HttpClient, which executes get request.
+     * @return httpResponse, which entity should be manuals' body.
+     * @throws IOException
+     */
     private static HttpResponse getResponse(Manual m, HttpClient httpclient) throws IOException {
+        //Building httpGet request.
         HttpGet httpget = null;
         try {
+            //will throw exception, if manuals' url contains incorrect symbols.
             httpget =  new HttpGet(m.getPdfUrl());
         }
         catch (IllegalArgumentException e){
+            //Changing incorrect symbols in manuals' url to correct.
             httpget = new HttpGet(ManualSizeChecker.getUrlForHttp(m.getPdfUrl()));
         }
-        HttpResponse response = null;
+        //Preparing HttpResponse object.
+        HttpResponse result = null;
+
+        //Executing httpGet request.
         try{
-            response = httpclient.execute(httpget);
+            result = httpclient.execute(httpget);
         }
         catch (SSLException e){
+            //In 80% cases SSLException can be solved, by changing https to http in manuals' url. So we do it.
             if (m.getPdfUrl().contains("https")){
                 String s = m.getPdfUrl();
                 s = s.replaceAll("https", "http");
                 m.setPdfUrl(s);
-                response = getResponse(m,httpclient);
+                result = getResponse(m,httpclient);
             }
         }
-        return response;
+        return result;
     }
+
+    /**
+     * Saves manual body to file.
+     * @param response - HttpResponse, which entity should be manuals' body.
+     * @param file - file, where to save manuals' body.
+     * @throws IOException
+     */
     private static void savePdfFile(HttpResponse response, File file) throws IOException {
+        //Preparing entity object.
+
+        //Checking if response is null.
         HttpEntity entity = null;
         if (response != null) {
             entity = response.getEntity();
         }
+
+        //If entity is not null - saving manuals' body to file.
         if (entity != null) {
             InputStream inputStream=entity.getContent();
             Files.copy(inputStream, file.toPath());
@@ -109,11 +176,29 @@ public class ManualDownloadUtil {
         }
     }
 
+    /**
+     * Checks if manual was downloaded correctly, or not.
+     * @param m - downloaded manual.
+     * @return True, if manuals' file is corrupted.
+     */
     private static boolean isCorrupt(Manual m){
+        //Getting downloaded manuals' file.
         File file = new File(DOWNLOAD_DIR+m.getId()+".pdf");
+
+        //Getting downloaded manuals' file size.
         long fileSize = file.length();
+
+        //if size is less that 1024 bytes - file is surely corrupted.
         if (fileSize<1024)return true;
+
+        //if size is higher that 8kb and it equals to estimated size - we assume that file is correct.
+        //This assumption is correct in 99,9% of cases (estimation from experience).
+        // As next check method is slow - we choose to neglect possible file corruption,
+        // rather than to check each file by trying to read it from disk.
         if (fileSize==m.getSize()&&fileSize>8192)return false;
+
+        //For all cases left, we checking manuals consistency by reading its first page
+        //from disk. PdfReader will send exception if manuals' file is corrupted.
         try {
             PdfReader pdfReader = new PdfReader(file.getAbsolutePath());
             PdfTextExtractor.getTextFromPage( pdfReader, 1 );
@@ -125,25 +210,35 @@ public class ManualDownloadUtil {
         return false;
     }
 
+    /**
+     * Gets manualSize
+     * @param m - manual, which estimated size we are trying to get.
+     * @return estimated size for Manual m.
+     */
     private static Integer getManualSize(Manual m){
         Integer result = 0;
-        ExecutorService es = Executors.newCachedThreadPool();
+
+        //Starting ExecutorService.
+        ExecutorService es = Executors.newSingleThreadExecutor();
+
+        //Starting task, which should return manuals' estimated size or 0, in case if any exception occurs.
         Future<Integer> future = es.submit(new ManualSizeGetter(m.getPdfUrl()));
-        es.shutdown();
         try {
+            //If method works longer that 3 seconds, we abort it and return 0.
             result=future.get(3,TimeUnit.SECONDS);
         } catch (Exception e) {
             result=0;
         }
-
+        es.shutdown();
         return result;
     }
-
-
 
     public static void main(String[] args) {
         download(new Manual("1111249","https://archive.icann.org/en/tlds/org/applications/register/attachments/hardware/servers/COLOR-IBM-x330.pdf" ,0));
        // System.out.println(isCorrupt(new Manual("4139409","http://www.autometer.com/media/manual/2650-1727.pdf" ,0)));
     }
+
+    //todo:  Implement downloadFTP method. Decide minimum legit size for manual. Delete main method.
+    //todo:  Manage fileAlreadyExists exception, after downloading restart.
 
 }

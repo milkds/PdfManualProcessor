@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This class reads and returns dictionaries from files.
+ * This class reads from files  and returns dictionaries as ArrayList of Strings.
  */
 
 public class DictionaryHandler {
@@ -45,7 +45,4 @@ public class DictionaryHandler {
     public static List<String>getCheckDeleteByBodyDictionary(){
         return getDictionary(CHECK_DELETE_BY_BODY);
     }
-    
-    
-    //// TODO: 30.03.2016 write Paths, implement getDictionary 
 }
