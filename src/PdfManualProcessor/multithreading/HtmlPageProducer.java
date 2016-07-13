@@ -39,5 +39,7 @@ public class HtmlPageProducer implements Runnable{
         synchronized (tmpManualList){
            tmpManualList.addAll(manuals);
         }
+
+        System.out.println("got page " + pageNo);
     }
 }

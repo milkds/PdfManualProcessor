@@ -42,6 +42,8 @@ public class ManualProducingController {
         //Total html pages in system (if last contains less then 10 manuals)
         if (totalManuals%10>0)totalPages++;
 
+        System.out.println("total pages = "+ totalPages+". Total manuals - " + totalManuals);
+
         //Creating and starting tasks to get html pages body. If start all them at once - server will fail to response in 30% times.
         ExecutorService service = Executors.newFixedThreadPool(10);
         for (int i = 1; i <=totalPages ; i++) {
@@ -51,13 +53,11 @@ public class ManualProducingController {
         //Checking until we get all manuals.
         while (temp.size()<totalManuals){
             try {
+                System.out.println(temp.size());
                 TimeUnit.SECONDS.sleep(5);
             } catch (InterruptedException ignored) {
             }
         }
-
-        //Getting list of previously got manuals.
-        List<Manual> allManuals = ManualSerializer.getAllManualsFromFile();
 
         //Sorting list of manuals by domain of their URLs.
         Collections.sort(temp);

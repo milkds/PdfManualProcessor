@@ -240,5 +240,6 @@ public class ManualDownloadUtil {
 
     //todo:  Implement downloadFTP method. Decide minimum legit size for manual. Delete main method.
     //todo:  Manage fileAlreadyExists exception, after downloading restart.
+    //todo:  Rework reading part from isCorrupt method. Such logic should be implemented in ManualReader class.
 
 }

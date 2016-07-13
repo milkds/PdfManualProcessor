@@ -4,23 +4,39 @@ import PdfManualProcessor.Manual;
 
 import java.awt.*;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collections;
 
+/**
+ * This class implements logic of manual opening in browser.
+ */
 public class ManualPageOpener {
 
     private static final String URL_START = "http://74.117.180.69:83/work/pdfapprove/index.php?action=pdf&id=";
 
+    /**
+     * Opens manual in browser. Also saves manual as opened if necessary.
+     * @param manual - manual to open.
+     * @param saveToFile - Save to file as opened if true.
+     * @throws Exception
+     */
     public static void open(Manual manual, boolean saveToFile) throws Exception {
         openManualPage(manual);
         if (saveToFile) saveManualAsOpened(manual);
     }
 
+    /**
+     * Saves manual as opened.
+     * @param manual - Manual to save.
+     */
     private static void saveManualAsOpened(Manual manual){
-        List<Manual> manuals = new ArrayList<>();
-        manuals.add(manual);
-        ManualSerializer.saveOpenedManualsToFile(manuals);
+        ManualSerializer.saveOpenedManualsToFile(Collections.singletonList(manual));
     }
+
+    /**
+     * Opens manual in browser.
+     * @param manual - manual to open in browser.
+     * @throws Exception
+     */
     private static void openManualPage(Manual manual)throws Exception{
         Desktop desktop = Desktop.getDesktop();
         URI url = new URI(URL_START+manual.getId());
@@ -31,4 +47,6 @@ public class ManualPageOpener {
     private boolean isManualProcessed(Manual manual){
         return false;
     }
+
+    //todo: implement opening previously opened manuals. Decide how to open first manual (as if no manual opened - opens initial page, instead of manuals.
 }

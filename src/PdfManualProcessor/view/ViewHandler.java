@@ -50,5 +50,6 @@ public class ViewHandler {
     public void fireEventCheckManuals() {
         mainView.setVisible(false);
         manualCheckView = new ManualCheckView();
+        manualCheckView.setVisible(true);
     }
 }

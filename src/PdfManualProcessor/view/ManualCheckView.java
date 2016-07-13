@@ -51,6 +51,7 @@ public class ManualCheckView extends JFrame implements View {
                 ((DefaultListModel) manualList.getModel()).remove(index);
 
                 manualList.revalidate();
+                manualList.grabFocus();
             }
         });
         delete = new JButton("delete manuals");
@@ -175,4 +176,8 @@ public class ManualCheckView extends JFrame implements View {
 
         revalidate();
     }
+
+
+    //todo: Implement focur return after manual removing from list. Also implement shortkey delete.
+    //todo: Rework PDF preview, to make it load no more than 10 pages.
 }

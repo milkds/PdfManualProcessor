@@ -16,9 +16,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class ManualFilteringController {
     private final BlockingQueue<Manual> filteringQueue = new LinkedBlockingQueue<>();;
     private static final int THREAD_QUANTITY = 5;
-
-
-
     private Integer total;
     private AtomicInteger counter;
 
