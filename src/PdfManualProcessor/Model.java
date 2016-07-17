@@ -8,6 +8,9 @@ import PdfManualProcessor.view.LongActionProgressBar;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * This class implements logic of main program functions.
+ */
 public class Model {
     private Controller controller;
     private CurrentAction currentAction;
@@ -18,11 +21,17 @@ public class Model {
         this.currentAction = currentAction;
     }
 
+    /**
+     * Returns manual with status WAIT by default.
+     * @param controller Controller object.
+     */
     public Model(Controller controller) {
         this.controller = controller;
         currentAction=CurrentAction.WAIT;
     }
-
+    /**
+    Calls Manual list refresh.
+     */
     public void refreshManualList() {
         try {
             ManualProducingController.refreshManualList();
@@ -31,10 +40,21 @@ public class Model {
         }
     }
 
+    /**
+     * Calls Manual's opening in browser.
+     * @param manualsToOpenQuantity - Quantity of manuals to open defined by User.
+     */
     public void openNextManualsInBrowser(int manualsToOpenQuantity){
+        //Getting list of manuals to open.
         List<Manual> manualsToOpen = ManualSerializer.getManualsForOpening();
+
+        //Getting total quantity of manuals to open
         int size = manualsToOpen.size();
+
+        //Checking that User haven't chosen to open more manuals that we have available.
         if (manualsToOpenQuantity>size)manualsToOpenQuantity=size-1;
+
+        //Opening Manuals in browser.
         for (int i = 0; i <= manualsToOpenQuantity ; i++) {
             Manual manual = manualsToOpen.get(i);
             try {
@@ -45,10 +65,21 @@ public class Model {
         }
     }
 
+    /**
+     * Calls previously opened Manual's opening in browser.
+     * @param manualsToOpenQuantity - Quantity of manuals to open defined by User.
+     */
     public void openPrevManualsInBrowser(int manualsToOpenQuantity) {
+        //Getting list of manuals to open.
         List<Manual> manualsToOpen = ManualSerializer.getManualsForReopening();
+
+        //Getting total quantity of manuals to open
         int size = manualsToOpen.size();
+
+        //Checking that User haven't chosen to open more manuals that we have available.
         if (manualsToOpenQuantity>size)manualsToOpenQuantity=size-1;
+
+        //Opening Manuals in browser.
         for (int i = 0; i <= manualsToOpenQuantity ; i++) {
             Manual manual = manualsToOpen.get(i);
             try {
@@ -59,12 +90,22 @@ public class Model {
         }
     }
 
+    /**
+     * Deletes manuals in system.
+     * @param manuals - List of manuals to delete.
+     */
     public static void deleteManualsInConsole(List<Manual> manuals){
         ManualProducingController.deleteManualsInConsole(manuals);
     }
 
+    /**
+     * Cancels long action.
+     */
     public void cancelLongAction() {
-        System.out.println("cancelled");
+        //User notification.
+        System.out.println("Cancelling");
+
+        //Checking which action is currently going and calling its cancellation.
         switch (currentAction){
             case CHECK:{
                 manualProducingController.cancelManualFiltration();
@@ -75,17 +116,36 @@ public class Model {
                 break;
             }
         }
+
+        //User notification.
+        System.out.println("Cancelled.");
     }
 
+    /**
+     * Downloads manuals.
+     * @param progressBar - Progress bar for view during this action.
+     */
     public void downloadManuals(LongActionProgressBar progressBar) {
+        //Setting current action.
         setCurrentAction(CurrentAction.DOWNLOAD);
+
+        //Downloading manuals.
         manualProducingController = new ManualProducingController();
         manualProducingController.downloadManuals(progressBar);
     }
 
+    /**
+     * Filters manuals.
+     * @param progressBar - Progress bar for view during this action.
+     */
     public void filterManuals(LongActionProgressBar progressBar) {
+        //Setting current action.
         setCurrentAction(CurrentAction.CHECK);
+
+        //Filtering manuals.
         manualProducingController = new ManualProducingController();
         manualProducingController.filterManuals(progressBar);
     }
 }
+
+    //todo: Remove controller variable, as it never used.

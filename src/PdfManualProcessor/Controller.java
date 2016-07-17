@@ -3,6 +3,9 @@ package PdfManualProcessor;
 import PdfManualProcessor.view.LongActionProgressBar;
 import PdfManualProcessor.view.ViewHandler;
 
+/**
+ * This class starts program. Receives method calls from view and transfers them to model.
+ */
 public class Controller {
     private Model model;
 
@@ -41,5 +44,6 @@ public class Controller {
         model.filterManuals(progressBar);
     }
 
-    //todo: check serializing after stops
+    //todo: check serializing after stops.
+    //todo: Decide if there any sense to keep this class. Perhaps its better to rename ViewHandler.
 }

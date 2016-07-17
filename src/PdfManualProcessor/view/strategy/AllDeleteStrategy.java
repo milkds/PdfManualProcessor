@@ -6,7 +6,12 @@ import PdfManualProcessor.service.ManualSerializer;
 
 import java.util.List;
 
+/**
+ * This class is used, when User checks all downloaded Manuals
+ */
+
 public class AllDeleteStrategy implements Strategy {
+
     @Override
     public String[] getManualList() {
         List<Manual> manuals = ManualSerializer.getManualsForFiltration();
@@ -29,4 +34,7 @@ public class AllDeleteStrategy implements Strategy {
         List<Manual> checkedManuals = ManualSerializer.getDeleteAfterCheckManuals();
         Model.deleteManualsInConsole(checkedManuals);
     }
+
+
+    //todo: Find more correct name for this class.
 }

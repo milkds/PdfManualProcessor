@@ -6,6 +6,9 @@ import PdfManualProcessor.service.ManualSerializer;
 
 import java.util.List;
 
+/**
+ * This class is used, when User checks manuals previously filtered as to be deleted..
+ */
 public class SureDeleteStrategy implements Strategy {
     @Override
     public String[] getManualList() {

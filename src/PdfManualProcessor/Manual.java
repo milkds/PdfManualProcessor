@@ -1,5 +1,9 @@
 package PdfManualProcessor;
 
+/**
+ * This is Manual object class. Manual's ID is always unique and its used
+ * here for equals and compareTo methods.
+ */
 public class Manual implements Comparable {
     public void setSize(int size) {
         this.size = size;
@@ -9,15 +13,26 @@ public class Manual implements Comparable {
         this.pdfUrl = pdfUrl;
     }
 
-    private String pdfUrl;
-    private String id;
-    private int size;
+    private String pdfUrl; //Manual's URL.
+    private String id; //Manuals ID in System.
+    private int size; //Manuals estimated size.
 
+    /**
+     * Returns Manual with 0 size - when no size is available.
+     * @param id - Manual's ID.
+     * @param pdfUrl- Manual's URL.
+     */
     public Manual(String id, String pdfUrl) {
         this.id = id;
         this.pdfUrl = pdfUrl;
         this.size = 0;
     }
+
+    /**
+     * Returns Manual with existing size - when no size is available.
+     * @param id - Manual's ID.
+     * @param pdfUrl- Manual's URL.
+     */
     public Manual(String id, String pdfUrl,int size) {
         this.id = id;
         this.pdfUrl = pdfUrl;

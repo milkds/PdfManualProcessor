@@ -8,7 +8,6 @@ import java.io.PrintStream;
 /**
  * This class is made for redirecting console output to JTextArea, same for each window.
  */
-
 public class Console extends JTextArea {
 
     public Console() {
@@ -17,12 +16,19 @@ public class Console extends JTextArea {
     }
 
     private void init() {
+        //implementing some additional settings
         setEditable(false);
         setLineWrap(true);
+
+        //Launching main logic.
         redirectSystemStreams();
     }
 
+    /**
+     * Redirects all console output to JTextArea.
+     */
     private void redirectSystemStreams() {
+        //Implementing our version of OutputStream()
         OutputStream out = new OutputStream() {
             @Override
             public void write(int b) throws IOException {
@@ -40,10 +46,15 @@ public class Console extends JTextArea {
             }
         };
 
+        //Changing System constants.
         System.setOut(new PrintStream(out, true));
         System.setErr(new PrintStream(out, true));
     }
 
+    /**
+     * Updates JTextArea.
+     * @param text - text to show in console.
+     */
     private void updateTextArea(final String text) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {

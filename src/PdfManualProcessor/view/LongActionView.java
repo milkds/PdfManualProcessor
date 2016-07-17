@@ -7,6 +7,10 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+/**
+ * This view is shown, while long work (downloading manuals, reading manuals, etc.) is in process.
+ */
+
 public class LongActionView extends JFrame implements View {
 
     private Console console;
@@ -34,20 +38,25 @@ public class LongActionView extends JFrame implements View {
 
     @Override
     public void init() {
+        //Initialising panels.
         buttons = new JPanel();
         process = new JPanel();
         down= new JPanel();
         up = new JPanel();
 
-        JLabel label = new JLabel(new ImageIcon("C:\\Users\\AUSU\\IdeaProjects\\ideaGitLearning\\src\\PdfManualProcessor\\res\\img.png"));
-        up.add(label);
-
+        //Setting layouts
         process.setLayout(new BorderLayout());
         down.setLayout(new GridLayout(1,2,5,5));
         buttons.setLayout(new FlowLayout(FlowLayout.LEFT));
 
+        //Setting picture to show while downloading (decorative function).
+        JLabel label = new JLabel(new ImageIcon("C:\\Users\\AUSU\\IdeaProjects\\ideaGitLearning\\src\\PdfManualProcessor\\res\\img.png"));
+        up.add(label);
+
+        //Making console scrollable.
         scroll = new JScrollPane(console);
 
+        //Initialising buttons.
         cancel = new JButton("Cancel");
         cancel.addActionListener(new ActionListener() {
             @Override
@@ -56,19 +65,23 @@ public class LongActionView extends JFrame implements View {
             }
         });
 
+        //Initialising progress bar
         progressBar = new LongActionProgressBar();
 
-
+        //Filling panels.
         buttons.add(cancel,BorderLayout.NORTH);
+
         process.add(scroll,BorderLayout.CENTER);
         process.add(progressBar,BorderLayout.NORTH);
 
         down.add(process);
         down.add(buttons,BorderLayout.EAST);
 
+        //Placing panels.
         getContentPane().add(up,BorderLayout.NORTH);
         getContentPane().add(down,BorderLayout.CENTER);
 
+        //Initialising view
         pack();
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setVisible(true);
@@ -78,3 +91,8 @@ public class LongActionView extends JFrame implements View {
         new LongActionView(new Console(),new ViewHandler(new Controller()));
     }
 }
+
+
+//todo: add button to return to main view.
+//todo: choose picture for decoration.
+//todo: delete main() method.
