@@ -143,5 +143,6 @@ public class LoginHandler {
     }
 
 
- //// TODO: Implement Exception handling. Implement getting value for manual delete method.
+    //todo: Implement Exception handling. Implement getting value for manual delete method.
+    //todo: Take out URL generation in separate method (out of the getHtmlPage() method).
 }

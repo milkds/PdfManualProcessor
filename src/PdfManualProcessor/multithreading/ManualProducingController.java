@@ -34,7 +34,7 @@ public class ManualProducingController {
         CookieStore cookieStore = LoginHandler.getCookies("LOGIN","PASSWORD");
 
         //Total quantity of manuals in system (parsing from start page).
-        int totalManuals = ManualPageParser.getManualsQuantity(LoginHandler.getHtmlPage(cookieStore,1));
+        int totalManuals = ManualPageParser.getTotalManualsQuantityLeftForProcessing(LoginHandler.getHtmlPage(cookieStore,1));
 
         //Total full html pages in system (each page contains 10 manuals)
         int totalPages = totalManuals/10;
@@ -125,7 +125,8 @@ public class ManualProducingController {
         //filtering by Url.
         filterController.filterManualsByUrl();
 
-        //filtering by manual file body.
+        //filtering by manual file body (method starts filtering procedure in separate thread, so we
+        //go further at this method almost immediately.
         filterController.filterManualsByBody();
 
         //initialising and starting progress bar for filtration by body (filtration by url is not a long action).
@@ -135,4 +136,6 @@ public class ManualProducingController {
     }
 
     //// TODO: 29.06.2016 refactor deleteManualsInConsole() method to make it use ExecutorService. Name this class properly.
+    //// TODO: 29.06.2016 Remove hardcode from refreshManualList() method (in block where we check if refresh process is over or not).
+    //// TODO: 29.06.2016 Move progress bar initialisation to separate method.
 }

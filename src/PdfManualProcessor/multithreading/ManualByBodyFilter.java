@@ -40,7 +40,6 @@ public class ManualByBodyFilter implements Runnable {
                  m = filteringQueue.take();
                 // if queue is empty - cancel whole task. As by design queue can be empty only when no tasks left.
                 if (m==null){
-                    filteringQueue.put(m);
                     break;
                 }
             } catch (InterruptedException ignored) {

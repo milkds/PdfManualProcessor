@@ -5,13 +5,6 @@ package PdfManualProcessor;
  * here for equals and compareTo methods.
  */
 public class Manual implements Comparable {
-    public void setSize(int size) {
-        this.size = size;
-    }
-
-    public void setPdfUrl(String pdfUrl) {
-        this.pdfUrl = pdfUrl;
-    }
 
     private String pdfUrl; //Manual's URL.
     private String id; //Manuals ID in System.
@@ -49,6 +42,14 @@ public class Manual implements Comparable {
 
     public int getSize() {
         return size;
+    }
+
+    public void setSize(int size) {
+        this.size = size;
+    }
+
+    public void setPdfUrl(String pdfUrl) {
+        this.pdfUrl = pdfUrl;
     }
 
     @Override

@@ -14,7 +14,6 @@ public class ManualSizeGetter implements Callable<Integer> {
     public ManualSizeGetter(String manualUrl) {
         this.manualUrl = manualUrl;
     }
-
     @Override
     public Integer call() throws Exception {
         return ManualSizeChecker.getManualSize(manualUrl);

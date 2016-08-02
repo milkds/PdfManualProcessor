@@ -110,7 +110,7 @@ public class ManualSizeChecker {
         HttpResponse response;
 
         //Changing incorrect symbols in URL to correct (according to HttpClient logic).
-        final String checkedUrl = getUrlForHttp(urlString);
+        final String checkedUrl = getCorrectUrlForHttp(urlString);
 
         try {
             //Preparing http Head request.
@@ -188,7 +188,7 @@ public class ManualSizeChecker {
      * @param urlString Manual's URL with incorrect symbols.
      * @return Manual's URL with correct symbols.
      */
-    static String getUrlForHttp(String urlString)  {
+    static String getCorrectUrlForHttp(String urlString)  {
         urlString = urlString.replaceAll("\\{","%7B");
         urlString = urlString.replaceAll("\\}","%7D");
         urlString = urlString.replaceAll("\\[","%5B");

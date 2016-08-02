@@ -16,7 +16,7 @@ public class ManualDownloader implements Runnable {
     private BlockingQueue<Manual> downloadingQueue;
     private static final String NOTIFY_FORMAT = "downloaded %d manuals of total %d in %d ms. %s - %s";
     private final AtomicInteger counter;
-    private  Integer total;
+    private Integer total;
 
     public ManualDownloader(BlockingQueue<Manual> downloadingQueue, AtomicInteger counter, Integer total) {
         this.downloadingQueue = downloadingQueue;
@@ -33,9 +33,8 @@ public class ManualDownloader implements Runnable {
             try {
                 //getting manual from queue.
                 m = downloadingQueue.take();
-                //if queue is empty, cancels whole task, as by design empty queue means that there is no manuals left to download
+                //if queue is empty, cancels whole task, as by design empty queue means that there is no manuals left to download.
                 if (m == null) {
-                    downloadingQueue.put(m);
                     break;
                 }
                 //downloading manual.
@@ -63,6 +62,8 @@ public class ManualDownloader implements Runnable {
     }
     /**
      * saving manuals to file with list of downloaded manuals.
+     * We make list with one manual, as basically serialising method is
+     * written for List<Manual> and not for single object.
      * @param m - downloaded manual to serialize.
      */
     private void serializeDownloadedManual(Manual m){

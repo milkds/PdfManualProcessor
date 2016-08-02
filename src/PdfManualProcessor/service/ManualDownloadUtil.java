@@ -27,7 +27,7 @@ import java.util.concurrent.*;
  */
 public class ManualDownloadUtil {
     private static final String PROXY_URL = "http://74.117.180.69:83/work/pdfapprove/get_pdf_curl.php?url=";
-    private static final String DOWNLOAD_DIR = "D:\\pdf.Storage\\";  //change it to directory from properties
+    private static final String DOWNLOAD_DIR = "D:\\pdf.Storage\\";  //change it to directory from properties.
 
     /**
      * Gets manuals' size.
@@ -72,12 +72,6 @@ public class ManualDownloadUtil {
            httpclient.close();
        }
        catch (IOException ignored){}
-
-        //Getting size of downloaded manual.
-        long fileSize = file.length();
-
-        //Getting estimated size.
-        int size = m.getSize();
 
         //Checking manual file - if it is corrupted, starting download by proxy.
         if (isCorrupt(m)){
@@ -132,7 +126,7 @@ public class ManualDownloadUtil {
         }
         catch (IllegalArgumentException e){
             //Changing incorrect symbols in manuals' url to correct.
-            httpget = new HttpGet(ManualSizeChecker.getUrlForHttp(m.getPdfUrl()));
+            httpget = new HttpGet(ManualSizeChecker.getCorrectUrlForHttp(m.getPdfUrl()));
         }
         //Preparing HttpResponse object.
         HttpResponse result = null;
@@ -143,9 +137,9 @@ public class ManualDownloadUtil {
         }
         catch (SSLException e){
             //In 80% cases SSLException can be solved, by changing https to http in manuals' url. So we do it.
-            if (m.getPdfUrl().contains("https")){
+            if (m.getPdfUrl().toLowerCase().startsWith("https")){
                 String s = m.getPdfUrl();
-                s = s.replaceAll("https", "http");
+                s = s.replace("https", "http");
                 m.setPdfUrl(s);
                 result = getResponse(m,httpclient);
             }
@@ -161,9 +155,9 @@ public class ManualDownloadUtil {
      */
     private static void savePdfFile(HttpResponse response, File file) throws IOException {
         //Preparing entity object.
+        HttpEntity entity = null;
 
         //Checking if response is null.
-        HttpEntity entity = null;
         if (response != null) {
             entity = response.getEntity();
         }
@@ -241,5 +235,7 @@ public class ManualDownloadUtil {
     //todo:  Implement downloadFTP method. Decide minimum legit size for manual. Delete main method.
     //todo:  Manage fileAlreadyExists exception, after downloading restart.
     //todo:  Rework reading part from isCorrupt method. Such logic should be implemented in ManualReader class.
+    //todo:  Check file creation.
+    //todo:  Check in savePdfFile() method - was pdf file saved or not.
 
 }

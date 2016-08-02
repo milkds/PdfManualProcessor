@@ -33,7 +33,7 @@ public class HtmlPageProducer implements Runnable{
         }
 
         //parsing page body on up to 10 Manual objects with 0 size.
-        List<Manual> manuals = ManualPageParser.getManuals(pageBody);
+        List<Manual> manuals = ManualPageParser.getManualsList(pageBody);
 
         //writing Manuals to common List<Manual>.
         synchronized (tmpManualList){

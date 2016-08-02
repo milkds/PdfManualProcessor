@@ -14,7 +14,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * This class manages Manual filtration.
  */
 public class ManualFilteringController {
-    private final BlockingQueue<Manual> filteringQueue = new LinkedBlockingQueue<>();;
+    private final BlockingQueue<Manual> filteringQueue = new LinkedBlockingQueue<>();
     private static final int THREAD_QUANTITY = 5;
     private Integer total;
     private AtomicInteger counter;
@@ -59,9 +59,8 @@ public class ManualFilteringController {
 
         //Launching filtering threads,
         for (int i = 0; i < THREAD_QUANTITY ; i++) {
-           new Thread(new ManualByBodyFilter(counter, total, filteringQueue,sureDeleteDictionary,checkDeleteDictionary)).start();
+           new Thread(new ManualByBodyFilter(counter,total,filteringQueue,sureDeleteDictionary,checkDeleteDictionary)).start();
         }
-
     }
 
     /**

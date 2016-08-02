@@ -30,7 +30,7 @@ public class DownloadController {
         //initialising counter of downloaded manuals. (needed for user notification).
         counter = new AtomicInteger(0);
 
-        //filling downloadingQueue with manuals to download
+        //filling downloadingQueue with manuals to download.
         for (Manual m : manuals){
             try {
                 downloadingQueue.put(m);
@@ -45,7 +45,7 @@ public class DownloadController {
     }
     /**
      * Cancels download by clearing queue (some time needed for each
-     * thread to complete its current task - than it is shutdown by itself after getting null manual from queue).
+     * thread to complete its current task - than it is shut down by itself after getting null manual from queue).
      */
     public void cancelDownload(){
         downloadingQueue.clear();
@@ -63,5 +63,5 @@ public class DownloadController {
         return total;
     }
 
-    //todo: decide necessary number of threads for downloading and way this number stated (properties or hardcode).
+    //todo: decide necessary number of threads for downloading and way this number kept (properties or hardcode).
 }

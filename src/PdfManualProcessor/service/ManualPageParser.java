@@ -18,7 +18,7 @@ public class ManualPageParser {
      * @param pageBody Body of html page.
      * @return List of manuals from html page.
      */
-    public static List<Manual> getManuals(String pageBody){
+    public static List<Manual> getManualsList(String pageBody){
         List<Manual> result = new ArrayList<>();
 
         //Parsing page.
@@ -42,11 +42,11 @@ public class ManualPageParser {
     }
 
     /**
-     * Gets total manual quantity from start page.
+     * Gets total manual quantity in system from start page.
      * @param pageBody Start page body.
-     * @return Totalnuber of manuals to be processed by user.
+     * @return Total number of manuals to be processed by user.
      */
-    public static int getManualsQuantity(String pageBody){
+    public static int getTotalManualsQuantityLeftForProcessing(String pageBody){
         //Parsing page.
         Document doc = Jsoup.parse(pageBody);
 
