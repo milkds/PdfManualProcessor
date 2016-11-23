@@ -44,5 +44,5 @@ public class Controller {
         model.filterManuals(progressBar);
     }
 
-    //todo: Decide if there any sense to keep this class. Perhaps its better to rename ViewHandler.
+    //todo: Decide if there any sense to keep this class. Perhaps its better to rename ViewHandler
 }
