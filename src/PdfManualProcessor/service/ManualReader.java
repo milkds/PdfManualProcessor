@@ -48,9 +48,7 @@ public class ManualReader {
             }
             pdfReader.close();
         }
-        //to be reworked
-        catch (Exception | Error e) {
-            System.out.println("PDF file is not readable");
+        catch (Exception | Error ignored) {
         }
 
         return fileBody.toString();
@@ -64,9 +62,4 @@ public class ManualReader {
     public static String readStartingPages(Manual manual){
         return readStartingPages(manual,NUMBER_OF_PAGES_TO_READ);
     }
-
-
-    //todo: rework catch section from readStartingPages.
-    //todo: try to implement pdf reading via IcePDF lib and check which is better.
-
 }

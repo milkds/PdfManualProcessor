@@ -11,7 +11,6 @@ import java.util.List;
  */
 
 public class AllDeleteStrategy implements Strategy {
-
     @Override
     public String[] getManualList() {
         List<Manual> manuals = ManualSerializer.getManualsForFiltration();
@@ -34,7 +33,4 @@ public class AllDeleteStrategy implements Strategy {
         List<Manual> checkedManuals = ManualSerializer.getDeleteAfterCheckManuals();
         Model.deleteManualsInConsole(checkedManuals);
     }
-
-
-    //todo: Find more correct name for this class.
 }

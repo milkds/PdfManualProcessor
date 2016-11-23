@@ -196,6 +196,4 @@ public class ManualSizeChecker {
         urlString=urlString.replaceAll("\\\\","/");
         return urlString;
     }
-
-    // TODO: 15.04.2016. Check ResponseHandler for notOpen Manuals(404 answer). Decide where to check if Manual's size legit or not.
 }

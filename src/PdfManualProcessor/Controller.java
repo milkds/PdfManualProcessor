@@ -44,6 +44,5 @@ public class Controller {
         model.filterManuals(progressBar);
     }
 
-    //todo: check serializing after stops.
     //todo: Decide if there any sense to keep this class. Perhaps its better to rename ViewHandler.
 }

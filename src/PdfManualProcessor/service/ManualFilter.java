@@ -78,6 +78,4 @@ public abstract class ManualFilter {
             ManualSerializer.saveCheckDeleteManualsToFile(Collections.singletonList(m));
         }
     }
-
-//todo: Decide if there any sense to keep this class abstract. Decide how to filter out manuals, which are not open.
 }

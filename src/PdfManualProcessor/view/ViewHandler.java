@@ -98,5 +98,3 @@ public class ViewHandler {
         manualCheckView = new ManualCheckView();
     }
 }
-
-//todo: Check method descriptions for possible improvements.

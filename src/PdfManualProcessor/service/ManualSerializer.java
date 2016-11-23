@@ -45,8 +45,7 @@ public class ManualSerializer {
         try (FileWriter fileWriter = new FileWriter(filePath.toAbsolutePath().toFile(),true)) {
             fileWriter.write(stringWriter.toString());
             stringWriter.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException ignored) {
         }
     }
 
@@ -63,8 +62,7 @@ public class ManualSerializer {
                 String[]split = line.split("\t");
                 result.add(new Manual(split[0],split[1],Integer.parseInt(split[2])));
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException ignored) {
         }
         return result;
     }
@@ -261,8 +259,4 @@ public class ManualSerializer {
 
         return result;
     }
-
-
-    // TODO:  implement exception processing. CheckFileWriting for case with interrupted writing.
-    // TODO:  check access level.
 }

@@ -78,5 +78,4 @@ public class ManualFilteringController {
         return counter;
     }
 
-    //todo: Decide quantity of threads necessary and where to store this variable.
 }

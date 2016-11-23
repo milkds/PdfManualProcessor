@@ -13,10 +13,7 @@ import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
+import java.awt.event.*;
 
 /**
  * This class shows Manuals for visual check by User. Also launches manual deletion in system.
@@ -29,6 +26,7 @@ public class ManualCheckView extends JFrame implements View {
     private JScrollPane scroll;
     private JComboBox strategyList;
     private Container contentPane;
+    private SwingController controller;
 
     private Strategy strategy;
 
@@ -59,7 +57,7 @@ public class ManualCheckView extends JFrame implements View {
                 //Checking selection index, to avoid exception when index is 0 and we
                 //try to select -1.
                 int index = manualList.getSelectedIndex();
-                if (index>0)manualList.setSelectedIndex(index-1);
+                if (index>0)manualList.setSelectedIndex(index+1);
                 else manualList.setSelectedIndex(0);
 
                 //Removing manual from view.
@@ -121,10 +119,6 @@ public class ManualCheckView extends JFrame implements View {
         setVisible(true);
     }
 
-    public static void main(String[] args) {
-        new ManualCheckView();
-    }
-
     /**
      * Initialises manual list.
      */
@@ -154,16 +148,12 @@ public class ManualCheckView extends JFrame implements View {
         JPanel result;
 
         //Manual previewing lib's magic.
-        SwingController controller = new SwingController();
+        controller = new SwingController();
         SwingViewBuilder factory = new SwingViewBuilder(controller);
         result = factory.buildViewerPanel();
         ComponentKeyBinding.install(controller, result);
         controller.setPageViewMode( DocumentViewControllerImpl.ONE_PAGE_VIEW, false);
-
-        //Checking if we have any manual to open. Opening manual if true.
-        if (manualList.getMaxSelectionIndex()>0) {
-            controller.openDocument(filePath);
-        }
+        manualList.grabFocus();
 
         return result;
     }
@@ -172,11 +162,16 @@ public class ManualCheckView extends JFrame implements View {
      * Updates manual body view with new manual.
      */
     private void updateView(){
+        controller.closeDocument();
+        right.removeAll();
+
         //Removing existing panel.
         contentPane.remove(right);
-
+        right = null;
         //Generating new panel.
         right= initManualViewPanel("D:\\pdf.Storage\\"+manualList.getSelectedValue()+".pdf");
+        controller.openDocument("D:\\pdf.Storage\\"+manualList.getSelectedValue()+".pdf");
+        manualList.grabFocus();
 
         //Adding new panel to main panel.
         contentPane.add(right,BorderLayout.EAST);
@@ -207,22 +202,19 @@ public class ManualCheckView extends JFrame implements View {
             }
         });
 
-        //Adding keyListener (far more comfortable to use keys to switch between manuals, than to do it by mouse).
+        //Adding listener to remove manuals from list by pressing Space button.
         manualList.addKeyListener(new KeyListener() {
             @Override
             public void keyTyped(KeyEvent e) {
-                int key = e.getKeyCode();
-                if (key==KeyEvent.VK_UP){
-                    System.out.println(manualList.getSelectedIndex());
-                    manualList.setSelectedIndex(manualList.getSelectedIndex()-1);
-                }
-                if (key==KeyEvent.VK_DOWN){manualList.setSelectedIndex(manualList.getSelectedIndex()+1);
-                    System.out.println(manualList.getSelectedIndex());}
+                //do nothing
             }
 
             @Override
             public void keyPressed(KeyEvent e) {
-                //do nothing
+                int key = e.getKeyCode();
+                if (key==KeyEvent.VK_SPACE){
+                    moveManual.doClick();
+                }
             }
 
             @Override
@@ -237,13 +229,4 @@ public class ManualCheckView extends JFrame implements View {
         //Drawing list.
         revalidate();
     }
-
-
-    //todo: Implement shortkey delete.
-    //todo: Rework PDF preview, to make it load no more than 10 pages.
-    //todo: Rework strategy initialisation.
-    //todo: Remove main() method.
-    //todo: In initManualViewPanel() method - rework manual opening (issue with check).
-    //todo: Remove manual directory hardCode in updateView() and init() methods.
-    //todo: Check listeners in updateScroll() method. Perhaps we should move them to init() method.
 }

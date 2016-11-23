@@ -42,11 +42,4 @@ public class ManualPageOpener {
         URI url = new URI(URL_START+manual.getId());
         desktop.browse(url);
     }
-
-    //Check if manual already processed (this used for opening previous manuals)
-    private boolean isManualProcessed(Manual manual){
-        return false;
-    }
-
-    //todo: implement opening previously opened manuals. Decide how to open first manual (as if no manual opened - opens initial page, instead of manuals.
 }

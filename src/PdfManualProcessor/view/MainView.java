@@ -15,7 +15,7 @@ public class MainView extends JFrame implements View {
 
     private JButton download, filter, refresh, check,next, prev;
     private JScrollPane scroll;
-    private JPanel box,openers,west;
+    private JPanel buttons,openers,west;
     private JLabel nManuals, pManuals;
     private SpinnerModel nextModel,prevModel;
     private JSpinner nextSpinner,prevSpinner;
@@ -30,7 +30,7 @@ public class MainView extends JFrame implements View {
     @Override
     public void init() {
         // Initialising panels.
-        box = new JPanel(new GridLayout(5, 1,0,5));
+        buttons = new JPanel(new GridLayout(5, 1,0,5));
         west = new JPanel(new GridBagLayout());
         scroll = new JScrollPane(console);
 
@@ -40,15 +40,15 @@ public class MainView extends JFrame implements View {
         //Initialising panel for manual in browser opening.
         initOpeners();
 
-        //Filling box panel.
-        box.add(refresh);
-        box.add(download);
-        box.add(filter);
-        box.add(check);
-        box.add(openers);
+        //Filling buttons panel.
+        buttons.add(refresh);
+        buttons.add(download);
+        buttons.add(filter);
+        buttons.add(check);
+        buttons.add(openers);
 
         //Placing panels.
-        west.add(box);
+        west.add(buttons);
         getContentPane().add(west, BorderLayout.WEST);
         getContentPane().add(scroll);
 
@@ -140,12 +140,4 @@ public class MainView extends JFrame implements View {
             }
         });
     }
-
-    public static void main(String[] args) {
-        Console console = new Console();
-        new MainView(console, null);
-    }
 }
-
-//todo: name box panel correctly.
-//todo: remove Main() method.

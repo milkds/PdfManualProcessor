@@ -97,7 +97,7 @@ public class LoginHandler {
             }
             rd.close();
             httpclient.close();
-        } catch (IOException e) {
+        } catch (IOException ignored) {
           return "";
         }
         return result.toString();
@@ -107,15 +107,7 @@ public class LoginHandler {
      * Send delete request to system for selected manual.
      * @param manual - manual to delete.
      */
-    public static void removeManualInConsole(Manual manual){
-        //Getting cookies.
-        CookieStore cookieStore=null;
-        try {
-            cookieStore = getCookies("LOGIN","PASSWORD");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
+    public static void removeManualInConsole(Manual manual, CookieStore cookieStore){
         //Building httpClient and context.
         CloseableHttpClient httpclient = HttpClients.createDefault();
         HttpClientContext context = HttpClientContext.create();
@@ -130,19 +122,15 @@ public class LoginHandler {
         List<NameValuePair> urlParameters = new ArrayList<NameValuePair>();
         urlParameters.add(new BasicNameValuePair("id", manual.getId()));
         urlParameters.add(new BasicNameValuePair("delete", "delete"));
-        urlParameters.add(new BasicNameValuePair("user", "user_fl7")); //need to implement getting value here
+        urlParameters.add(new BasicNameValuePair("user", "user_fl7"));
 
         //Executing request, closing httpClient.
         try {
             httpPost.setEntity(new UrlEncodedFormEntity(urlParameters));
             httpclient.execute(httpPost,context);
             httpclient.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println(manual.getId()+" manual was deleted successfully.");
+        } catch (IOException ignored) {
         }
     }
-
-
-    //todo: Implement Exception handling. Implement getting value for manual delete method.
-    //todo: Take out URL generation in separate method (out of the getHtmlPage() method).
 }

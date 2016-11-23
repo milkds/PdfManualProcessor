@@ -62,6 +62,4 @@ public class DownloadController {
     public Integer getTotal() {
         return total;
     }
-
-    //todo: decide necessary number of threads for downloading and way this number kept (properties or hardcode).
 }

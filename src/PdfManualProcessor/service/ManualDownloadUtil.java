@@ -50,7 +50,7 @@ public class ManualDownloadUtil {
      * @param m - Manual to download.
      */
     private static void downloadFtpManual(Manual m){
-        System.out.println("ftp skipped. "+m.getPdfUrl());
+        downloadHttpManual(m);
     }
 
     /**
@@ -226,16 +226,4 @@ public class ManualDownloadUtil {
         es.shutdown();
         return result;
     }
-
-    public static void main(String[] args) {
-        download(new Manual("1111249","https://archive.icann.org/en/tlds/org/applications/register/attachments/hardware/servers/COLOR-IBM-x330.pdf" ,0));
-       // System.out.println(isCorrupt(new Manual("4139409","http://www.autometer.com/media/manual/2650-1727.pdf" ,0)));
-    }
-
-    //todo:  Implement downloadFTP method. Decide minimum legit size for manual. Delete main method.
-    //todo:  Manage fileAlreadyExists exception, after downloading restart.
-    //todo:  Rework reading part from isCorrupt method. Such logic should be implemented in ManualReader class.
-    //todo:  Check file creation.
-    //todo:  Check in savePdfFile() method - was pdf file saved or not.
-
 }

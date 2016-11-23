@@ -1,6 +1,6 @@
 package PdfManualProcessor;
 
-import PdfManualProcessor.multithreading.ManualProducingController;
+import PdfManualProcessor.multithreading.MultithreadingController;
 import PdfManualProcessor.service.ManualPageOpener;
 import PdfManualProcessor.service.ManualSerializer;
 import PdfManualProcessor.view.LongActionProgressBar;
@@ -15,7 +15,7 @@ public class Model {
     private Controller controller;
     private CurrentAction currentAction;
 
-    private ManualProducingController manualProducingController;
+    private MultithreadingController multithreadingController;
 
     public void setCurrentAction(CurrentAction currentAction) {
         this.currentAction = currentAction;
@@ -34,7 +34,7 @@ public class Model {
      */
     public void refreshManualList() {
         try {
-            ManualProducingController.refreshManualList();
+            MultithreadingController.refreshManualList();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -95,7 +95,10 @@ public class Model {
      * @param manuals - List of manuals to delete.
      */
     public static void deleteManualsInConsole(List<Manual> manuals){
-        ManualProducingController.deleteManualsInConsole(manuals);
+        try {
+            MultithreadingController.deleteManualsInConsole(manuals);
+        } catch (IOException ignored) {
+        }
     }
 
     /**
@@ -108,11 +111,11 @@ public class Model {
         //Checking which action is currently going and calling its cancellation.
         switch (currentAction){
             case CHECK:{
-                manualProducingController.cancelManualFiltration();
+                multithreadingController.cancelManualFiltration();
                 break;
             }
             case DOWNLOAD:{
-                manualProducingController.cancelDownloadManuals();
+                multithreadingController.cancelDownloadManuals();
                 break;
             }
         }
@@ -130,8 +133,8 @@ public class Model {
         setCurrentAction(CurrentAction.DOWNLOAD);
 
         //Downloading manuals.
-        manualProducingController = new ManualProducingController();
-        manualProducingController.downloadManuals(progressBar);
+        multithreadingController = new MultithreadingController();
+        multithreadingController.downloadManuals(progressBar);
     }
 
     /**
@@ -143,8 +146,8 @@ public class Model {
         setCurrentAction(CurrentAction.CHECK);
 
         //Filtering manuals.
-        manualProducingController = new ManualProducingController();
-        manualProducingController.filterManuals(progressBar);
+        multithreadingController = new MultithreadingController();
+        multithreadingController.filterManuals(progressBar);
     }
 }
 

@@ -20,6 +20,4 @@ public interface Strategy {
      * Removes selected manuals from system.
      */
     void onRemoveAll();
-
-    //todo: Think about implementation onRemove() method in one place.
 }

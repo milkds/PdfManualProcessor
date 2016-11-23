@@ -18,9 +18,11 @@ import java.util.concurrent.TimeUnit;
 /**
  * This class manages all multithreading functions (downloading, filtration, etc.)
  */
-public class ManualProducingController {
+public class MultithreadingController {
     private DownloadController downloadController;
     private ManualFilteringController filterController;
+    private static final String LOGIN = "LOGIN";
+    private static final String PASSWORD = "PASSWORD";
 
     /**
      * Refreshes list of all manuals.
@@ -31,7 +33,7 @@ public class ManualProducingController {
         List<Manual> temp = new ArrayList<>();
 
         //Getting cookieStore to avoid further cookie requests.
-        CookieStore cookieStore = LoginHandler.getCookies("LOGIN","PASSWORD");
+        CookieStore cookieStore = LoginHandler.getCookies(LOGIN,PASSWORD);
 
         //Total quantity of manuals in system (parsing from start page).
         int totalManuals = ManualPageParser.getTotalManualsQuantityLeftForProcessing(LoginHandler.getHtmlPage(cookieStore,1));
@@ -53,7 +55,6 @@ public class ManualProducingController {
         //Checking until we get all manuals.
         while (temp.size()<totalManuals){
             try {
-                System.out.println(temp.size());
                 TimeUnit.SECONDS.sleep(5);
             } catch (InterruptedException ignored) {
             }
@@ -71,16 +72,21 @@ public class ManualProducingController {
      * Deletes manuals in system.
      * @param manuals - list of manuals for delete.
      */
-    public static void deleteManualsInConsole(List<Manual> manuals) {
-        //for each manual we start new thread, which sends delete request to server.
-        for (final Manual m : manuals){
-            new Thread(new Runnable() {
+    public static void deleteManualsInConsole(List<Manual> manuals) throws IOException {
+        //Getting cookies.
+        final CookieStore cookieStore = LoginHandler.getCookies(LOGIN,PASSWORD);
+
+        //Deleting manuals.
+        ExecutorService service = Executors.newFixedThreadPool(5);
+        for (final Manual m : manuals) {
+            service.submit(new Runnable() {
                 @Override
                 public void run() {
-                    LoginHandler.removeManualInConsole(m);
+                    LoginHandler.removeManualInConsole(m,cookieStore);
                 }
-            }).start();
+            });
         }
+        service.shutdown();
     }
 
     /**
@@ -130,12 +136,12 @@ public class ManualProducingController {
         filterController.filterManualsByBody();
 
         //initialising and starting progress bar for filtration by body (filtration by url is not a long action).
-        progressBar.setCounter(filterController.getCounter());
-        progressBar.setTotal(filterController.getTotal());
-        new Thread(progressBar).start();
+        launchProgressBar(progressBar);
     }
 
-    //// TODO: 29.06.2016 refactor deleteManualsInConsole() method to make it use ExecutorService. Name this class properly.
-    //// TODO: 29.06.2016 Remove hardcode from refreshManualList() method (in block where we check if refresh process is over or not).
-    //// TODO: 29.06.2016 Move progress bar initialisation to separate method.
+   public void launchProgressBar(LongActionProgressBar progressBar){
+       progressBar.setCounter(filterController.getCounter());
+       progressBar.setTotal(filterController.getTotal());
+       new Thread(progressBar).start();
+   }
 }

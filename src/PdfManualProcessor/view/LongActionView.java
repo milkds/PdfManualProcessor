@@ -1,7 +1,5 @@
 package PdfManualProcessor.view;
 
-import PdfManualProcessor.Controller;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -86,13 +84,4 @@ public class LongActionView extends JFrame implements View {
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setVisible(true);
     }
-
-    public static void main(String[] args) {
-        new LongActionView(new Console(),new ViewHandler(new Controller()));
-    }
 }
-
-
-//todo: add button to return to main view.
-//todo: choose picture for decoration.
-//todo: delete main() method.
